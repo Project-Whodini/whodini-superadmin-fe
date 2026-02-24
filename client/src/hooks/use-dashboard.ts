@@ -22,16 +22,51 @@ function buildMockDashboardStats(): DashboardStats {
     const d = new Date(today);
     d.setDate(d.getDate() - i);
 
-    const totalUsers = 1000 + i * 5;
-    const activeDaily = 400 + i * 2;
-    const activeWeekly = 800 + i * 3;
-    const totalEntities = 40 + Math.floor(i / 2);
-    const activeEntities = 30 + Math.floor(i / 2);
-    const activeSubscriptions = 90 + i;
-    const mrr = 500000 + i * 5000;
+    // For the most recent two days, lock values so the
+    // GitHub Pages demo matches the local dashboard snapshot.
+    if (i === 0) {
+      // "Today" – matches your local dashboard screenshot
+      stats.push({
+        date: d.toISOString().slice(0, 10),
+        totalUsers: 1050,
+        activeUsersDaily: 469,
+        activeUsersWeekly: 0, // not shown anywhere
+        totalEntities: 49,
+        activeEntities: 49, // treat all entities as active for the top card
+        activeSubscriptions: 105,
+        mrr: 500000, // arbitrary but stable
+      });
+      continue;
+    }
+
+    if (i === 1) {
+      // "Yesterday / last period" – chosen so % trends match:
+      // users 1050 vs 1000 -> ~5%
+      // entities 49 vs 46 -> ~7%
+      // subscriptions 105 vs 100 -> ~5%
+      stats.push({
+        date: d.toISOString().slice(0, 10),
+        totalUsers: 1000,
+        activeUsersDaily: 447,
+        activeUsersWeekly: 0,
+        totalEntities: 46,
+        activeEntities: 46,
+        activeSubscriptions: 100,
+        mrr: 476000,
+      });
+      continue;
+    }
+
+    // Older history: simple, smooth backfill that looks reasonable
+    const totalUsers = 900 + i * 4;
+    const activeDaily = 350 + i * 2;
+    const activeWeekly = 700 + i * 3;
+    const totalEntities = 30 + Math.floor(i / 2);
+    const activeEntities = 25 + Math.floor(i / 2);
+    const activeSubscriptions = 80 + i;
+    const mrr = 400000 + i * 4000;
 
     stats.push({
-      // only fields used by the dashboard UI are populated
       date: d.toISOString().slice(0, 10),
       totalUsers,
       activeUsersDaily: activeDaily,
