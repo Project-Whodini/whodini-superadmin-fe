@@ -51,6 +51,11 @@ import {
   Tooltip as RechartsTooltip,
   Legend,
 } from "recharts";
+import {
+  territoriesTable,
+  billingRevenueByTerritoryTable,
+} from "@/data/territories";
+import { billingRecentInvoicesTable } from "@/data/invoices";
 
 const entitiesTable = [
   {
@@ -112,86 +117,8 @@ const subscriptionsTable = [
   },
 ];
 
-const staffTable = [
-  {
-    id: "ST_10",
-    name: "Admin Root",
-    role: "SuperAdmin",
-    status: "Active",
-    created: "2025-09-01",
-    lastActive: "2026-02-11",
-  },
-  {
-    id: "ST_11",
-    name: "Karen Lim",
-    role: "Support",
-    status: "Active",
-    created: "2025-10-10",
-    lastActive: "2026-02-10",
-  },
-  {
-    id: "ST_12",
-    name: "Leo Tan",
-    role: "Ops",
-    status: "Active",
-    created: "2025-12-01",
-    lastActive: "2026-02-11",
-  },
-];
-
-const territoriesTable = [
-  {
-    code: "US-EAST",
-    name: "United States – East",
-    currency: "USD",
-    status: "Enabled",
-    entities: 24,
-    activeSubs: 18,
-  },
-  {
-    code: "EU-WEST",
-    name: "Europe – West",
-    currency: "EUR",
-    status: "Enabled",
-    entities: 15,
-    activeSubs: 11,
-  },
-  {
-    code: "APAC",
-    name: "Asia Pacific",
-    currency: "USD",
-    status: "Disabled",
-    entities: 6,
-    activeSubs: 0,
-  },
-];
-
-const featureFlagsTable = [
-  {
-    key: "billing.v2-checkout",
-    module: "Billing",
-    defaultState: "On",
-    environment: "Production",
-    lastUpdated: "2026-02-09",
-    updatedBy: "Admin Root",
-  },
-  {
-    key: "entities.multi-territory",
-    module: "Entities",
-    defaultState: "Beta",
-    environment: "Staging",
-    lastUpdated: "2026-02-07",
-    updatedBy: "Leo Tan",
-  },
-  {
-    key: "staff.audit-log-v2",
-    module: "Staff",
-    defaultState: "Off",
-    environment: "Production",
-    lastUpdated: "2026-02-01",
-    updatedBy: "Mark Evans",
-  },
-];
+import { staffTable } from "@/data/staff";
+import { featureFlagsTable } from "@/data/featureFlags";
 
 const billingSubscriptionsTable = [
   {
@@ -259,118 +186,6 @@ const billingSubscriptionsTable = [
     currency: "USD",
     territory: "EU-West",
     createdDate: "2026-02-05",
-  },
-];
-
-const billingRevenueByTerritoryTable = [
-  {
-    territory: "US-East",
-    activeSubscriptions: 24,
-    currentRevenue: 28400,
-    previousRevenue: 26150,
-    currency: "USD",
-    status: "Enabled",
-  },
-  {
-    territory: "EU-West",
-    activeSubscriptions: 18,
-    currentRevenue: 19600,
-    previousRevenue: 18880,
-    currency: "EUR",
-    status: "Enabled",
-  },
-  {
-    territory: "US-West",
-    activeSubscriptions: 11,
-    currentRevenue: 13250,
-    previousRevenue: 12400,
-    currency: "USD",
-    status: "Enabled",
-  },
-  {
-    territory: "APAC",
-    activeSubscriptions: 7,
-    currentRevenue: 7700,
-    previousRevenue: 8050,
-    currency: "USD",
-    status: "Disabled",
-  },
-  {
-    territory: "LATAM",
-    activeSubscriptions: 5,
-    currentRevenue: 5100,
-    previousRevenue: 4720,
-    currency: "USD",
-    status: "Enabled",
-  },
-];
-
-const billingRecentInvoicesTable = [
-  {
-    invoiceId: "INV-12011",
-    entity: "Northwind Studio",
-    amount: 890,
-    currency: "USD",
-    status: "Paid",
-    issuedDate: "2026-02-08",
-    dueDate: "2026-02-16",
-    territory: "US-East",
-    refundedAmount: 0,
-  },
-  {
-    invoiceId: "INV-12012",
-    entity: "Globex Europe",
-    amount: 720,
-    currency: "EUR",
-    status: "Pending",
-    issuedDate: "2026-02-09",
-    dueDate: "2026-02-18",
-    territory: "EU-West",
-    refundedAmount: 0,
-  },
-  {
-    invoiceId: "INV-12013",
-    entity: "Community Hub LA",
-    amount: 290,
-    currency: "USD",
-    status: "Overdue",
-    issuedDate: "2026-01-30",
-    dueDate: "2026-02-07",
-    territory: "US-West",
-    refundedAmount: 0,
-  },
-  {
-    invoiceId: "INV-12014",
-    entity: "Atlas Retail",
-    amount: 1600,
-    currency: "USD",
-    status: "Paid",
-    issuedDate: "2026-02-10",
-    dueDate: "2026-02-20",
-    territory: "US-East",
-    refundedAmount: 150,
-  },
-  {
-    invoiceId: "INV-12015",
-    entity: "Zenith Medical",
-    amount: 740,
-    currency: "USD",
-    status: "Paid",
-    issuedDate: "2026-02-11",
-    dueDate: "2026-02-19",
-    territory: "EU-West",
-    refundedAmount: 0,
-  },
-  {
-    invoiceId: "INV-12016",
-    entity: "Helios Labs",
-    amount: 420,
-    currency: "USD",
-    status: "Pending",
-    issuedDate: "2026-02-06",
-    dueDate: "2026-02-15",
-    territory: "APAC",
-    refundedAmount: 0,
   },
 ];
 

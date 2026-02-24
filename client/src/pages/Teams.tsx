@@ -1,0 +1,271 @@
+import { useEffect, useMemo, useState } from "react";
+import { Sidebar } from "@/components/Sidebar";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Search, Users, Bell } from "lucide-react";
+import { StatCard } from "@/components/StatCard";
+import { staffTable, type StaffRow } from "@/data/staff";
+
+export default function Teams() {
+  const [search, setSearch] = useState("");
+  const [roleFilter, setRoleFilter] = useState<
+    "all" | "SuperAdmin" | "Support" | "Ops" | "Finance"
+  >("all");
+  const [statusFilter, setStatusFilter] = useState<"all" | "Active" | "Inactive">(
+    "all",
+  );
+  const [page, setPage] = useState(1);
+  const pageSize = 10;
+
+  const totalStaff = staffTable.length;
+  const activeStaff = staffTable.filter((s) => s.status === "Active").length;
+
+  const filteredStaff = useMemo(() => {
+    return staffTable.filter((row) => {
+      const matchesSearch =
+        search.trim().length === 0 ||
+        row.name.toLowerCase().includes(search.toLowerCase()) ||
+        row.id.toLowerCase().includes(search.toLowerCase());
+
+      const matchesRole =
+        roleFilter === "all" || row.role === roleFilter;
+
+      const matchesStatus =
+        statusFilter === "all" || row.status === statusFilter;
+
+      return matchesSearch && matchesRole && matchesStatus;
+    });
+  }, [search, roleFilter, statusFilter]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [search, roleFilter, statusFilter]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredStaff.length / pageSize));
+  const paginatedStaff = filteredStaff.slice(
+    (page - 1) * pageSize,
+    page * pageSize,
+  );
+
+  return (
+    <div className="flex min-h-screen bg-[#F8FAFC]">
+      <Sidebar />
+
+      <main className="flex-1 overflow-y-auto max-h-screen">
+        <div className="container mx-auto p-4 md:p-8 space-y-8 max-w-7xl">
+          <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <h1 className="text-3xl font-display font-bold text-slate-900">
+                Teams &amp; Staff
+              </h1>
+              <p className="text-muted-foreground mt-1 max-w-2xl">
+                Internal staff accounts responsible for managing entities,
+                territories, and billing.
+              </p>
+            </div>
+            <div className="flex items-center gap-3">
+              <Button
+                size="icon"
+                variant="ghost"
+                className="rounded-full bg-white shadow-sm text-muted-foreground hover:text-primary"
+              >
+                <Bell className="w-5 h-5" />
+              </Button>
+              <Avatar className="h-10 w-10 border-2 border-white shadow-sm cursor-pointer">
+                <AvatarImage src="https://github.com/shadcn.png" />
+                <AvatarFallback>AD</AvatarFallback>
+              </Avatar>
+            </div>
+          </header>
+
+          <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+            <StatCard
+              title="Internal staff accounts"
+              value={totalStaff}
+              subValue="Whodini team members with access"
+              icon={<Users className="w-4 h-4" />}
+            />
+            <StatCard
+              title="Active staff"
+              value={activeStaff}
+              subValue="Currently active team members"
+              icon={<Users className="w-4 h-4" />}
+            />
+          </section>
+
+          <section className="space-y-3">
+            <Card className="theme-panel border-none">
+              <CardHeader className="pb-2 flex flex-row items-center justify-between gap-4">
+                <div>
+                  <CardTitle className="text-base font-display">
+                    Staff directory
+                  </CardTitle>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Internal operators with roles, status, and recent activity.
+                  </p>
+                </div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <div className="relative w-full sm:w-64">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input
+                      placeholder="Search by name or ID..."
+                      className="pl-9 bg-white border border-input text-sm placeholder:text-muted-foreground"
+                      value={search}
+                      onChange={(e) => setSearch(e.target.value)}
+                    />
+                  </div>
+                  <Select
+                    value={roleFilter}
+                    onValueChange={(
+                      value: "all" | "SuperAdmin" | "Support" | "Ops" | "Finance",
+                    ) => setRoleFilter(value)}
+                  >
+                    <SelectTrigger className="h-8 w-[170px] rounded-lg border border-orange-200/80 bg-white/75 text-xs font-medium text-slate-700">
+                      <SelectValue placeholder="Role" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All roles</SelectItem>
+                      <SelectItem value="SuperAdmin">SuperAdmin</SelectItem>
+                      <SelectItem value="Support">Support</SelectItem>
+                      <SelectItem value="Ops">Ops</SelectItem>
+                      <SelectItem value="Finance">Finance</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Select
+                    value={statusFilter}
+                    onValueChange={(value: "all" | "Active" | "Inactive") =>
+                      setStatusFilter(value)
+                    }
+                  >
+                    <SelectTrigger className="h-8 w-[150px] rounded-lg border border-orange-200/80 bg-white/75 text-xs font-medium text-slate-700">
+                      <SelectValue placeholder="Status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All status</SelectItem>
+                      <SelectItem value="Active">Active</SelectItem>
+                      <SelectItem value="Inactive">Inactive</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </CardHeader>
+              <CardContent className="p-0">
+                <div className="border-b border-border p-2" />
+                <Table className="[&_tr]:border-slate-200">
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="pl-6">Staff ID</TableHead>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Role</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Created</TableHead>
+                      <TableHead>Last Active</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {paginatedStaff.map((row: StaffRow) => (
+                      <TableRow
+                        key={row.id}
+                        className="hover:bg-orange-50/70 transition-colors"
+                      >
+                        <TableCell className="font-mono text-xs text-muted-foreground pl-6">
+                          {row.id}
+                        </TableCell>
+                        <TableCell className="font-medium">{row.name}</TableCell>
+                        <TableCell className="text-sm text-slate-700">
+                          {row.role}
+                        </TableCell>
+                        <TableCell>
+                          <Badge
+                            variant="outline"
+                            className="border-emerald-200 text-emerald-700 bg-emerald-50"
+                          >
+                            {row.status}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-sm text-slate-700">
+                          {row.created}
+                        </TableCell>
+                        <TableCell className="text-sm text-slate-700">
+                          {row.lastActive}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                    {filteredStaff.length === 0 && (
+                      <TableRow>
+                        <TableCell
+                          colSpan={6}
+                          className="py-8 text-center text-sm text-muted-foreground"
+                        >
+                          No staff match the current filters.
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+                {filteredStaff.length > 0 && (
+                  <div className="flex items-center justify-between px-4 py-3 border-t border-border text-xs text-muted-foreground">
+                    <span>
+                      Showing{" "}
+                      {(page - 1) * pageSize + 1}-
+                      {Math.min(page * pageSize, filteredStaff.length)} of{" "}
+                      {filteredStaff.length}
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-7 px-2 text-xs"
+                        onClick={() => setPage((p) => Math.max(1, p - 1))}
+                        disabled={page === 1}
+                      >
+                        Previous
+                      </Button>
+                      <span className="text-[11px]">
+                        Page {page} of {totalPages}
+                      </span>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-7 px-2 text-xs"
+                        onClick={() =>
+                          setPage((p) => Math.min(totalPages, p + 1))
+                        }
+                        disabled={page === totalPages}
+                      >
+                        Next
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </section>
+        </div>
+      </main>
+    </div>
+  );
+}
+

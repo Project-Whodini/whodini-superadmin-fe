@@ -20,7 +20,7 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 const NAV_ITEMS = [
-  { label: "Dashboard", icon: LayoutDashboard, href: "/" },
+  { label: "Dashboard", icon: LayoutDashboard, href: "/dashboard" },
   { label: "Users & Access", icon: Users, href: "/users" },
   { label: "Entities", icon: Building2, href: "/entities" },
   { label: "Invoices", icon: ReceiptText, href: "/invoices" },
@@ -31,7 +31,7 @@ const NAV_ITEMS = [
 ];
 
 export function Sidebar() {
-  const [location] = useLocation();
+  const [location, navigate] = useLocation();
 
   const NavContent = () => (
     <div className="flex flex-col h-full bg-slate-50/50">
@@ -77,7 +77,10 @@ export function Sidebar() {
             </div>
           </div>
         </div>
-        <button className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-red-600 transition-colors mt-6 w-full px-2">
+        <button
+          className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-red-600 transition-colors mt-6 w-full px-2"
+          onClick={() => navigate("/login")}
+        >
           <LogOut className="w-4 h-4" />
           <span>Sign Out</span>
         </button>
