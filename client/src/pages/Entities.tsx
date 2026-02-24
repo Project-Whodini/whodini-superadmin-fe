@@ -227,7 +227,7 @@ export default function Entities() {
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                     <Input
                       placeholder="Search by name, owner, or ID..."
-                      className="pl-9 bg-white border border-input text-sm placeholder:text-muted-foreground"
+                      className="h-8 pl-9 rounded-lg bg-white border border-slate-200 text-sm placeholder:text-muted-foreground"
                       value={search}
                       onChange={(e) => setSearch(e.target.value)}
                     />
@@ -238,7 +238,7 @@ export default function Entities() {
                       setStatusFilter(value)
                     }
                   >
-                    <SelectTrigger className="h-8 w-[150px] rounded-lg border border-orange-200/80 bg-white/75 text-xs font-medium text-slate-700">
+                    <SelectTrigger className="h-8 w-[150px] rounded-lg border border-slate-200 bg-white text-xs font-medium text-slate-700">
                       <SelectValue placeholder="Status" />
                     </SelectTrigger>
                     <SelectContent>
@@ -254,7 +254,7 @@ export default function Entities() {
                       value: "all" | "Business" | "Community" | "Personal",
                     ) => setTypeFilter(value)}
                   >
-                    <SelectTrigger className="h-8 w-[150px] rounded-lg border border-orange-200/80 bg-white/75 text-xs font-medium text-slate-700">
+                    <SelectTrigger className="h-8 w-[150px] rounded-lg border border-slate-200 bg-white text-xs font-medium text-slate-700">
                       <SelectValue placeholder="Entity type" />
                     </SelectTrigger>
                     <SelectContent>

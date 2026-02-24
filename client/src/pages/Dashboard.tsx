@@ -836,7 +836,7 @@ export default function Dashboard() {
                 </div>
                 <div className="flex items-center gap-2 flex-wrap">
                   <FilterSelect value={billingSubscriptionStatusFilter} onValueChange={setBillingSubscriptionStatusFilter}>
-                    <FilterSelectTrigger className="h-8 w-[150px] rounded-lg border border-orange-200/80 bg-white/75 text-xs font-medium text-slate-700">
+                    <FilterSelectTrigger className="h-8 w-[150px] rounded-lg border border-slate-200 bg-white text-xs font-medium text-slate-700">
                       <FilterSelectValue placeholder="Status" />
                     </FilterSelectTrigger>
                     <FilterSelectContent>
@@ -847,7 +847,7 @@ export default function Dashboard() {
                     </FilterSelectContent>
                   </FilterSelect>
                   <FilterSelect value={billingSubscriptionPlanFilter} onValueChange={setBillingSubscriptionPlanFilter}>
-                    <FilterSelectTrigger className="h-8 w-[150px] rounded-lg border border-orange-200/80 bg-white/75 text-xs font-medium text-slate-700">
+                    <FilterSelectTrigger className="h-8 w-[150px] rounded-lg border border-slate-200 bg-white text-xs font-medium text-slate-700">
                       <FilterSelectValue placeholder="Plan" />
                     </FilterSelectTrigger>
                     <FilterSelectContent>
@@ -860,7 +860,7 @@ export default function Dashboard() {
                     </FilterSelectContent>
                   </FilterSelect>
                   <FilterSelect value={billingSubscriptionTerritoryFilter} onValueChange={setBillingSubscriptionTerritoryFilter}>
-                    <FilterSelectTrigger className="h-8 w-[150px] rounded-lg border border-orange-200/80 bg-white/75 text-xs font-medium text-slate-700">
+                    <FilterSelectTrigger className="h-8 w-[150px] rounded-lg border border-slate-200 bg-white text-xs font-medium text-slate-700">
                       <FilterSelectValue placeholder="Territory" />
                     </FilterSelectTrigger>
                     <FilterSelectContent>
@@ -872,7 +872,7 @@ export default function Dashboard() {
                     </FilterSelectContent>
                   </FilterSelect>
                   <FilterSelect value={billingRenewalRangeFilter} onValueChange={setBillingRenewalRangeFilter}>
-                    <FilterSelectTrigger className="h-8 w-[170px] rounded-lg border border-orange-200/80 bg-white/75 text-xs font-medium text-slate-700">
+                    <FilterSelectTrigger className="h-8 w-[170px] rounded-lg border border-slate-200 bg-white text-xs font-medium text-slate-700">
                       <FilterSelectValue placeholder="Renewal Date Range" />
                     </FilterSelectTrigger>
                     <FilterSelectContent>
@@ -993,7 +993,7 @@ export default function Dashboard() {
                 </div>
                 <div className="flex items-center gap-2 flex-wrap">
                   <FilterSelect value={billingRevenueMonthFilter} onValueChange={setBillingRevenueMonthFilter}>
-                    <FilterSelectTrigger className="h-8 w-[150px] rounded-lg border border-orange-200/80 bg-white/75 text-xs font-medium text-slate-700">
+                    <FilterSelectTrigger className="h-8 w-[150px] rounded-lg border border-slate-200 bg-white text-xs font-medium text-slate-700">
                       <FilterSelectValue placeholder="Month" />
                     </FilterSelectTrigger>
                     <FilterSelectContent>
@@ -1002,7 +1002,7 @@ export default function Dashboard() {
                     </FilterSelectContent>
                   </FilterSelect>
                   <FilterSelect value={billingRevenueStatusFilter} onValueChange={setBillingRevenueStatusFilter}>
-                    <FilterSelectTrigger className="h-8 w-[170px] rounded-lg border border-orange-200/80 bg-white/75 text-xs font-medium text-slate-700">
+                    <FilterSelectTrigger className="h-8 w-[170px] rounded-lg border border-slate-200 bg-white text-xs font-medium text-slate-700">
                       <FilterSelectValue placeholder="Territory status" />
                     </FilterSelectTrigger>
                     <FilterSelectContent>
@@ -1094,7 +1094,7 @@ export default function Dashboard() {
                 </div>
                 <div className="flex items-center gap-2 flex-wrap">
                   <FilterSelect value={billingInvoiceStatusFilter} onValueChange={setBillingInvoiceStatusFilter}>
-                    <FilterSelectTrigger className="h-8 w-[150px] rounded-lg border border-orange-200/80 bg-white/75 text-xs font-medium text-slate-700">
+                    <FilterSelectTrigger className="h-8 w-[150px] rounded-lg border border-slate-200 bg-white text-xs font-medium text-slate-700">
                       <FilterSelectValue placeholder="Status" />
                     </FilterSelectTrigger>
                     <FilterSelectContent>
@@ -1105,7 +1105,7 @@ export default function Dashboard() {
                     </FilterSelectContent>
                   </FilterSelect>
                   <FilterSelect value={billingInvoiceDateRangeFilter} onValueChange={setBillingInvoiceDateRangeFilter}>
-                    <FilterSelectTrigger className="h-8 w-[170px] rounded-lg border border-orange-200/80 bg-white/75 text-xs font-medium text-slate-700">
+                    <FilterSelectTrigger className="h-8 w-[170px] rounded-lg border border-slate-200 bg-white text-xs font-medium text-slate-700">
                       <FilterSelectValue placeholder="Issued date range" />
                     </FilterSelectTrigger>
                     <FilterSelectContent>
@@ -1115,7 +1115,7 @@ export default function Dashboard() {
                     </FilterSelectContent>
                   </FilterSelect>
                   <FilterSelect value={billingInvoiceTerritoryFilter} onValueChange={setBillingInvoiceTerritoryFilter}>
-                    <FilterSelectTrigger className="h-8 w-[150px] rounded-lg border border-orange-200/80 bg-white/75 text-xs font-medium text-slate-700">
+                    <FilterSelectTrigger className="h-8 w-[150px] rounded-lg border border-slate-200 bg-white text-xs font-medium text-slate-700">
                       <FilterSelectValue placeholder="Territory" />
                     </FilterSelectTrigger>
                     <FilterSelectContent>
@@ -1231,7 +1231,7 @@ export default function Dashboard() {
                   </div>
                   <div className="flex items-center gap-2 flex-wrap">
                     <FilterSelect defaultValue="all">
-                      <FilterSelectTrigger className="h-8 w-[170px] min-w-[170px] rounded-lg border border-orange-200/80 bg-white/75 text-xs font-medium text-slate-700 [&>span]:line-clamp-none">
+                      <FilterSelectTrigger className="h-8 w-[170px] min-w-[170px] rounded-lg border border-slate-200 bg-white text-xs font-medium text-slate-700 [&>span]:line-clamp-none">
                         <FilterSelectValue placeholder="Status" />
                       </FilterSelectTrigger>
                       <FilterSelectContent>
@@ -1242,7 +1242,7 @@ export default function Dashboard() {
                       </FilterSelectContent>
                     </FilterSelect>
                     <FilterSelect defaultValue="all">
-                      <FilterSelectTrigger className="h-8 w-[170px] min-w-[170px] rounded-lg border border-orange-200/80 bg-white/75 text-xs font-medium text-slate-700 [&>span]:line-clamp-none">
+                      <FilterSelectTrigger className="h-8 w-[170px] min-w-[170px] rounded-lg border border-slate-200 bg-white text-xs font-medium text-slate-700 [&>span]:line-clamp-none">
                         <FilterSelectValue placeholder="Territory" />
                       </FilterSelectTrigger>
                       <FilterSelectContent>
@@ -1311,7 +1311,7 @@ export default function Dashboard() {
                   </div>
                   <div className="flex items-center gap-2 flex-wrap">
                     <FilterSelect defaultValue="all">
-                      <FilterSelectTrigger className="h-8 w-[170px] min-w-[170px] rounded-lg border border-orange-200/80 bg-white/75 text-xs font-medium text-slate-700 [&>span]:line-clamp-none">
+                      <FilterSelectTrigger className="h-8 w-[170px] min-w-[170px] rounded-lg border border-slate-200 bg-white text-xs font-medium text-slate-700 [&>span]:line-clamp-none">
                         <FilterSelectValue placeholder="Status" />
                       </FilterSelectTrigger>
                       <FilterSelectContent>
@@ -1322,7 +1322,7 @@ export default function Dashboard() {
                       </FilterSelectContent>
                     </FilterSelect>
                     <FilterSelect defaultValue="all">
-                      <FilterSelectTrigger className="h-8 w-[170px] min-w-[170px] rounded-lg border border-orange-200/80 bg-white/75 text-xs font-medium text-slate-700 [&>span]:line-clamp-none">
+                      <FilterSelectTrigger className="h-8 w-[170px] min-w-[170px] rounded-lg border border-slate-200 bg-white text-xs font-medium text-slate-700 [&>span]:line-clamp-none">
                         <FilterSelectValue placeholder="Plan" />
                       </FilterSelectTrigger>
                       <FilterSelectContent>
@@ -1410,7 +1410,7 @@ export default function Dashboard() {
                   </div>
                   <div className="flex items-center gap-2 flex-wrap">
                     <FilterSelect value={territoryStatusFilter} onValueChange={setTerritoryStatusFilter}>
-                      <FilterSelectTrigger className="h-8 w-[170px] min-w-[170px] rounded-lg border border-orange-200/80 bg-white/75 text-xs font-medium text-slate-700 [&>span]:line-clamp-none">
+                      <FilterSelectTrigger className="h-8 w-[170px] min-w-[170px] rounded-lg border border-slate-200 bg-white text-xs font-medium text-slate-700 [&>span]:line-clamp-none">
                         <FilterSelectValue placeholder="Status" />
                       </FilterSelectTrigger>
                       <FilterSelectContent>
@@ -1420,7 +1420,7 @@ export default function Dashboard() {
                       </FilterSelectContent>
                     </FilterSelect>
                     <FilterSelect value={territoryCurrencyFilter} onValueChange={setTerritoryCurrencyFilter}>
-                      <FilterSelectTrigger className="h-8 w-[170px] min-w-[170px] rounded-lg border border-orange-200/80 bg-white/75 text-xs font-medium text-slate-700 [&>span]:line-clamp-none">
+                      <FilterSelectTrigger className="h-8 w-[170px] min-w-[170px] rounded-lg border border-slate-200 bg-white text-xs font-medium text-slate-700 [&>span]:line-clamp-none">
                         <FilterSelectValue placeholder="Currency" />
                       </FilterSelectTrigger>
                       <FilterSelectContent>
@@ -1430,7 +1430,7 @@ export default function Dashboard() {
                       </FilterSelectContent>
                     </FilterSelect>
                     <FilterSelect value={billingRevenueMonthFilter} onValueChange={setBillingRevenueMonthFilter}>
-                      <FilterSelectTrigger className="h-8 w-[170px] min-w-[170px] rounded-lg border border-orange-200/80 bg-white/75 text-xs font-medium text-slate-700 [&>span]:line-clamp-none">
+                      <FilterSelectTrigger className="h-8 w-[170px] min-w-[170px] rounded-lg border border-slate-200 bg-white text-xs font-medium text-slate-700 [&>span]:line-clamp-none">
                         <FilterSelectValue placeholder="Revenue month" />
                       </FilterSelectTrigger>
                       <FilterSelectContent>
@@ -1545,7 +1545,7 @@ export default function Dashboard() {
                   </div>
                   <div className="flex items-center gap-2 flex-wrap">
                     <FilterSelect defaultValue="all">
-                      <FilterSelectTrigger className="h-8 w-[170px] min-w-[170px] rounded-lg border border-orange-200/80 bg-white/75 text-xs font-medium text-slate-700 [&>span]:line-clamp-none">
+                      <FilterSelectTrigger className="h-8 w-[170px] min-w-[170px] rounded-lg border border-slate-200 bg-white text-xs font-medium text-slate-700 [&>span]:line-clamp-none">
                         <FilterSelectValue placeholder="Role" />
                       </FilterSelectTrigger>
                       <FilterSelectContent>
@@ -1556,7 +1556,7 @@ export default function Dashboard() {
                       </FilterSelectContent>
                     </FilterSelect>
                     <FilterSelect defaultValue="all">
-                      <FilterSelectTrigger className="h-8 w-[170px] min-w-[170px] rounded-lg border border-orange-200/80 bg-white/75 text-xs font-medium text-slate-700 [&>span]:line-clamp-none">
+                      <FilterSelectTrigger className="h-8 w-[170px] min-w-[170px] rounded-lg border border-slate-200 bg-white text-xs font-medium text-slate-700 [&>span]:line-clamp-none">
                         <FilterSelectValue placeholder="Status" />
                       </FilterSelectTrigger>
                       <FilterSelectContent>
@@ -1628,7 +1628,7 @@ export default function Dashboard() {
                 </div>
                 <div className="flex items-center gap-2 flex-wrap">
                   <FilterSelect defaultValue="all">
-                    <FilterSelectTrigger className="h-8 w-[170px] min-w-[170px] rounded-lg border border-orange-200/80 bg-white/75 text-xs font-medium text-slate-700 [&>span]:line-clamp-none">
+                    <FilterSelectTrigger className="h-8 w-[170px] min-w-[170px] rounded-lg border border-slate-200 bg-white text-xs font-medium text-slate-700 [&>span]:line-clamp-none">
                       <FilterSelectValue placeholder="Module" />
                     </FilterSelectTrigger>
                     <FilterSelectContent>
@@ -1638,8 +1638,8 @@ export default function Dashboard() {
                       <FilterSelectItem value="staff">Staff</FilterSelectItem>
                     </FilterSelectContent>
                   </FilterSelect>
-                  <FilterSelect defaultValue="all">
-                    <FilterSelectTrigger className="h-8 w-[170px] min-w-[170px] rounded-lg border border-orange-200/80 bg-white/75 text-xs font-medium text-slate-700 [&>span]:line-clamp-none">
+                    <FilterSelect defaultValue="all">
+                      <FilterSelectTrigger className="h-8 w-[170px] min-w-[170px] rounded-lg border border-slate-200 bg-white text-xs font-medium text-slate-700 [&>span]:line-clamp-none">
                       <FilterSelectValue placeholder="State" />
                     </FilterSelectTrigger>
                     <FilterSelectContent>

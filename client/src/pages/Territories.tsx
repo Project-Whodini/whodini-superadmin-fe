@@ -25,6 +25,16 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+      DialogTrigger,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 import { Search, MapPinned, Bell } from "lucide-react";
 import { StatCard } from "@/components/StatCard";
 import {
@@ -54,6 +64,15 @@ export default function Territories() {
   const pageSize = 10;
 
   const [territories, setTerritories] = useState(territoriesTable);
+  const [isCreating, setIsCreating] = useState(false);
+  const [newTerritory, setNewTerritory] = useState<TerritoryRow>({
+    code: "",
+    name: "",
+    currency: "USD",
+    status: "Enabled",
+    entities: 0,
+    activeSubs: 0,
+  });
 
   const enabledTerritories = territories.filter(
     (territory) => territory.status === "Enabled",
@@ -220,7 +239,7 @@ export default function Territories() {
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                     <Input
                       placeholder="Search by name or code..."
-                      className="pl-9 bg-white border border-input text-sm placeholder:text-muted-foreground"
+                      className="h-8 pl-9 rounded-lg bg-white border border-slate-200 text-sm placeholder:text-muted-foreground"
                       value={search}
                       onChange={(e) => setSearch(e.target.value)}
                     />
@@ -231,7 +250,7 @@ export default function Territories() {
                       setStatusFilter(value)
                     }
                   >
-                    <SelectTrigger className="h-8 w-[150px] rounded-lg border border-orange-200/80 bg-white/75 text-xs font-medium text-slate-700">
+                    <SelectTrigger className="h-8 w-[150px] rounded-lg border border-slate-200 bg-white text-xs font-medium text-slate-700">
                       <SelectValue placeholder="Status" />
                     </SelectTrigger>
                     <SelectContent>
@@ -246,7 +265,7 @@ export default function Territories() {
                       setCurrencyFilter(value)
                     }
                   >
-                    <SelectTrigger className="h-8 w-[150px] rounded-lg border border-orange-200/80 bg-white/75 text-xs font-medium text-slate-700">
+                    <SelectTrigger className="h-8 w-[150px] rounded-lg border border-slate-200 bg-white text-xs font-medium text-slate-700">
                       <SelectValue placeholder="Currency" />
                     </SelectTrigger>
                     <SelectContent>
@@ -261,7 +280,7 @@ export default function Territories() {
                       setMonthFilter(value)
                     }
                   >
-                    <SelectTrigger className="h-8 w-[170px] rounded-lg border border-orange-200/80 bg-white/75 text-xs font-medium text-slate-700">
+                    <SelectTrigger className="h-8 w-[170px] rounded-lg border border-slate-200 bg-white text-xs font-medium text-slate-700">
                       <SelectValue placeholder="Revenue month" />
                     </SelectTrigger>
                     <SelectContent>
@@ -269,6 +288,205 @@ export default function Territories() {
                       <SelectItem value="previous">Previous month</SelectItem>
                     </SelectContent>
                   </Select>
+                  <Dialog open={isCreating} onOpenChange={setIsCreating}>
+                    <DialogTrigger asChild>
+                      <Button size="sm" className="h-8 px-3 text-xs">
+                        New territory
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-xl">
+                      <DialogHeader>
+                        <DialogTitle className="font-display">
+                          New territory
+                        </DialogTitle>
+                        <DialogDescription>
+                          Add a new region for reporting. This is demo-only and
+                          not persisted to a backend.
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="space-y-5 pt-1">
+                        <div className="grid grid-cols-1 gap-4">
+                          <div className="space-y-1.5">
+                            <Label htmlFor="territory-code" className="text-xs font-medium text-slate-700">
+                              Code
+                            </Label>
+                            <Input
+                              id="territory-code"
+                              autoFocus
+                              placeholder="e.g. US-EAST"
+                              className="h-9 text-xs font-mono placeholder:text-slate-400"
+                              value={newTerritory.code}
+                              onChange={(e) =>
+                                setNewTerritory((current) => ({
+                                  ...current,
+                                  code: e.target.value.toUpperCase(),
+                                }))
+                              }
+                            />
+                            <p className="text-[11px] text-muted-foreground">
+                              Use a short, uppercase region code.
+                            </p>
+                          </div>
+                          <div className="space-y-1.5">
+                            <Label htmlFor="territory-name" className="text-xs font-medium text-slate-700">
+                              Name
+                            </Label>
+                            <Input
+                              id="territory-name"
+                              placeholder="Territory name"
+                              className="h-9 text-xs"
+                              value={newTerritory.name}
+                              onChange={(e) =>
+                                setNewTerritory((current) => ({
+                                  ...current,
+                                  name: e.target.value,
+                                }))
+                              }
+                            />
+                          </div>
+                          <div className="space-y-1.5">
+                            <Label className="text-xs font-medium text-slate-700">
+                              Currency
+                            </Label>
+                            <Select
+                              value={newTerritory.currency}
+                              onValueChange={(value: "USD" | "EUR") =>
+                                setNewTerritory((current) => ({
+                                  ...current,
+                                  currency: value,
+                                }))
+                              }
+                            >
+                              <SelectTrigger className="h-9 text-xs rounded-lg border border-slate-200 bg-white">
+                                <SelectValue placeholder="Currency" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="USD">USD</SelectItem>
+                                <SelectItem value="EUR">EUR</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-1 gap-4">
+                          <div className="space-y-1.5">
+                            <Label className="text-xs font-medium text-slate-700">
+                              Status
+                            </Label>
+                            <Select
+                              value={newTerritory.status}
+                              onValueChange={(value: "Enabled" | "Disabled") =>
+                                setNewTerritory((current) => ({
+                                  ...current,
+                                  status: value,
+                                }))
+                              }
+                            >
+                              <SelectTrigger className="h-9 text-xs rounded-lg border border-slate-200 bg-white">
+                                <SelectValue placeholder="Status" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="Enabled">Enabled</SelectItem>
+                                <SelectItem value="Disabled">Disabled</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div className="space-y-1.5">
+                            <Label htmlFor="territory-entities" className="text-xs font-medium text-slate-700">
+                              Entities
+                            </Label>
+                            <Input
+                              id="territory-entities"
+                              type="number"
+                              min={0}
+                              placeholder="0"
+                              className="h-9 text-xs"
+                              value={
+                                Number.isNaN(newTerritory.entities)
+                                  ? ""
+                                  : newTerritory.entities
+                              }
+                              onChange={(e) =>
+                                setNewTerritory((current) => ({
+                                  ...current,
+                                  entities: Number(e.target.value) || 0,
+                                }))
+                              }
+                            />
+                          </div>
+                          <div className="space-y-1.5">
+                            <Label htmlFor="territory-active-subs" className="text-xs font-medium text-slate-700">
+                              Active subscriptions
+                            </Label>
+                            <Input
+                              id="territory-active-subs"
+                              type="number"
+                              min={0}
+                              placeholder="0"
+                              className="h-9 text-xs"
+                              value={
+                                Number.isNaN(newTerritory.activeSubs)
+                                  ? ""
+                                  : newTerritory.activeSubs
+                              }
+                              onChange={(e) =>
+                                setNewTerritory((current) => ({
+                                  ...current,
+                                  activeSubs: Number(e.target.value) || 0,
+                                }))
+                              }
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <DialogFooter>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-8 px-3 text-xs"
+                          onClick={() => {
+                            setIsCreating(false);
+                            setNewTerritory({
+                              code: "",
+                              name: "",
+                              currency: "USD",
+                              status: "Enabled",
+                              entities: 0,
+                              activeSubs: 0,
+                            });
+                          }}
+                        >
+                          Cancel
+                        </Button>
+                        <Button
+                          size="sm"
+                          className="h-8 px-3 text-xs"
+                          onClick={() => {
+                            if (
+                              !newTerritory.code.trim() ||
+                              !newTerritory.name.trim()
+                            ) {
+                              return;
+                            }
+                            setTerritories((current) => [
+                              ...current,
+                              { ...newTerritory },
+                            ]);
+                            setIsCreating(false);
+                            setNewTerritory({
+                              code: "",
+                              name: "",
+                              currency: "USD",
+                              status: "Enabled",
+                              entities: 0,
+                              activeSubs: 0,
+                            });
+                          }}
+                        >
+                          Save territory
+                        </Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
                 </div>
               </CardHeader>
               <CardContent className="p-0">

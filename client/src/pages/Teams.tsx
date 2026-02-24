@@ -25,6 +25,16 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 import { Search, Users, Bell } from "lucide-react";
 import { StatCard } from "@/components/StatCard";
 import { staffTable, type StaffRow } from "@/data/staff";
@@ -41,6 +51,12 @@ export default function Teams() {
   const pageSize = 10;
 
   const [staff, setStaff] = useState<StaffRow[]>(staffTable);
+  const [isCreating, setIsCreating] = useState(false);
+  const [newStaff, setNewStaff] = useState<Pick<StaffRow, "name" | "role" | "status">>({
+    name: "",
+    role: "SuperAdmin",
+    status: "Active",
+  });
 
   const totalStaff = staff.length;
   const activeStaff = staff.filter((s) => s.status === "Active").length;
@@ -147,7 +163,7 @@ export default function Teams() {
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                     <Input
                       placeholder="Search by name or ID..."
-                      className="pl-9 bg-white border border-input text-sm placeholder:text-muted-foreground"
+                      className="h-8 pl-9 rounded-lg bg-white border border-slate-200 text-sm placeholder:text-muted-foreground"
                       value={search}
                       onChange={(e) => setSearch(e.target.value)}
                     />
@@ -158,7 +174,7 @@ export default function Teams() {
                       value: "all" | "SuperAdmin" | "Support" | "Ops" | "Finance",
                     ) => setRoleFilter(value)}
                   >
-                    <SelectTrigger className="h-8 w-[170px] rounded-lg border border-orange-200/80 bg-white/75 text-xs font-medium text-slate-700">
+                    <SelectTrigger className="h-8 w-[170px] rounded-lg border border-slate-200 bg-white text-xs font-medium text-slate-700">
                       <SelectValue placeholder="Role" />
                     </SelectTrigger>
                     <SelectContent>
@@ -175,7 +191,7 @@ export default function Teams() {
                       setStatusFilter(value)
                     }
                   >
-                    <SelectTrigger className="h-8 w-[150px] rounded-lg border border-orange-200/80 bg-white/75 text-xs font-medium text-slate-700">
+                    <SelectTrigger className="h-8 w-[150px] rounded-lg border border-slate-200 bg-white text-xs font-medium text-slate-700">
                       <SelectValue placeholder="Status" />
                     </SelectTrigger>
                     <SelectContent>
@@ -184,6 +200,159 @@ export default function Teams() {
                       <SelectItem value="Inactive">Inactive</SelectItem>
                     </SelectContent>
                   </Select>
+                  <Dialog open={isCreating} onOpenChange={setIsCreating}>
+                  <DialogTrigger asChild>
+                    <Button size="sm" className="h-8 px-3 text-xs">
+                      New staff member
+                    </Button>
+                  </DialogTrigger>
+                    <DialogContent className="sm:max-w-xl">
+                      <DialogHeader>
+                        <DialogTitle className="font-display">
+                          New staff member
+                        </DialogTitle>
+                        <DialogDescription>
+                          Add an internal team member with the appropriate role and status.
+                          Changes take effect immediately for this workspace.
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="space-y-5 pt-1">
+                        <div className="grid grid-cols-1 gap-4">
+                          <div className="space-y-1.5">
+                            <Label
+                              htmlFor="staff-name"
+                              className="text-xs font-medium text-slate-700"
+                            >
+                              Full name
+                            </Label>
+                            <Input
+                              id="staff-name"
+                              autoFocus
+                              placeholder="e.g. Alex Doe"
+                              className="h-9 text-xs"
+                              value={newStaff.name}
+                              onChange={(e) =>
+                                setNewStaff((current) => ({
+                                  ...current,
+                                  name: e.target.value,
+                                }))
+                              }
+                            />
+                          </div>
+                          <div className="space-y-1.5">
+                            <Label className="text-xs font-medium text-slate-700">
+                              Role
+                            </Label>
+                            <Select
+                              value={newStaff.role}
+                              onValueChange={(
+                                value: "SuperAdmin" | "Support" | "Ops" | "Finance",
+                              ) =>
+                                setNewStaff((current) => ({
+                                  ...current,
+                                  role: value,
+                                }))
+                              }
+                            >
+                              <SelectTrigger className="h-9 text-xs rounded-lg border border-slate-200 bg-white">
+                                <SelectValue placeholder="Select role" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="SuperAdmin">SuperAdmin</SelectItem>
+                                <SelectItem value="Support">Support</SelectItem>
+                                <SelectItem value="Ops">Ops</SelectItem>
+                                <SelectItem value="Finance">Finance</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div className="space-y-1.5">
+                            <Label className="text-xs font-medium text-slate-700">
+                              Status
+                            </Label>
+                            <Select
+                              value={newStaff.status}
+                              onValueChange={(value: StaffStatus) =>
+                                setNewStaff((current) => ({
+                                  ...current,
+                                  status: value,
+                                }))
+                              }
+                            >
+                              <SelectTrigger className="h-9 text-xs rounded-lg border border-slate-200 bg-white">
+                                <SelectValue placeholder="Select status" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="Active">Active</SelectItem>
+                                <SelectItem value="Inactive">Inactive</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </div>
+                      </div>
+                      <DialogFooter>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-8 px-3 text-xs"
+                          onClick={() => {
+                            setIsCreating(false);
+                            setNewStaff({
+                              name: "",
+                              role: "SuperAdmin",
+                              status: "Active",
+                            });
+                          }}
+                        >
+                          Cancel
+                        </Button>
+                        <Button
+                          size="sm"
+                          className="h-8 px-3 text-xs"
+                          onClick={() => {
+                            if (!newStaff.name.trim()) {
+                              return;
+                            }
+                            const nextIdNumber =
+                              staff.reduce((max, row) => {
+                                const numeric = parseInt(
+                                  row.id.replace("ST_", ""),
+                                  10,
+                                );
+                                return Number.isNaN(numeric)
+                                  ? max
+                                  : Math.max(max, numeric);
+                              }, 0) + 1;
+                            const nextId = `ST_${String(nextIdNumber).padStart(
+                              2,
+                              "0",
+                            )}`;
+                            const today = new Date()
+                              .toISOString()
+                              .slice(0, 10);
+                            setStaff((current) => [
+                              ...current,
+                              {
+                                id: nextId,
+                                name: newStaff.name.trim(),
+                                role: newStaff.role,
+                                status: newStaff.status,
+                                created: today,
+                                lastActive: today,
+                              },
+                            ]);
+                            setIsCreating(false);
+                            setNewStaff({
+                              name: "",
+                              role: "SuperAdmin",
+                              status: "Active",
+                            });
+                          }}
+                        >
+                          Save staff member
+                        </Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
                 </div>
               </CardHeader>
               <CardContent className="p-0">
