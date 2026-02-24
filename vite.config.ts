@@ -6,6 +6,7 @@ import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
 const __dirname = new URL(".", import.meta.url).pathname;
 
 export default defineConfig({
+  base: process.env.VITE_BASE ?? "/",
   plugins: [
     react(),
     runtimeErrorOverlay(),
