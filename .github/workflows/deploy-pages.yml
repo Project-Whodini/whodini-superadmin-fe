@@ -33,6 +33,7 @@ jobs:
       - name: Build project
         env:
           VITE_BASE: /${{ github.event.repository.name }}/
+          VITE_USE_MOCK_DASHBOARD: "1"
         run: npm run build
 
       - name: Create SPA fallback
