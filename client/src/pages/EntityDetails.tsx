@@ -1,11 +1,11 @@
 import { Sidebar } from "@/components/Sidebar";
+import { PageHeader } from "@/components/PageHeader";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Table,
   TableBody,
@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/table";
 import { ENTITIES, type EntityRow, type EntityStatus } from "@/pages/Entities";
 import { Link, useRoute } from "wouter";
-import { ArrowLeft, CheckCircle2, XCircle, FileText, Bell } from "lucide-react";
+import { ArrowLeft, CheckCircle2, XCircle, FileText } from "lucide-react";
 
 function statusBadgeVariant(status: EntityStatus) {
   if (status === "approved") {
@@ -42,38 +42,24 @@ export default function EntityDetails() {
       <Sidebar />
 
       <main className="flex-1 overflow-y-auto max-h-screen">
+        <PageHeader />
         <div className="container mx-auto p-4 md:p-8 space-y-6 max-w-4xl">
-          <div className="flex items-center justify-between gap-4">
-            <Button
-              asChild
-              variant="ghost"
-              size="sm"
-              className="px-2 text-xs text-muted-foreground hover:text-primary"
-              onClick={() => {
-                if (window.history.length > 1) {
-                  window.history.back();
-                }
-              }}
-            >
-              <Link href="/entities">
-                <ArrowLeft className="w-4 h-4 mr-1" />
-                Back to entities
-              </Link>
-            </Button>
-            <div className="flex items-center gap-3">
-              <Button
-                size="icon"
-                variant="ghost"
-                className="rounded-full bg-white shadow-sm text-muted-foreground hover:text-primary"
-              >
-                <Bell className="w-5 h-5" />
-              </Button>
-              <Avatar className="h-10 w-10 border-2 border-white shadow-sm cursor-pointer">
-                <AvatarImage src="https://github.com/shadcn.png" />
-                <AvatarFallback>AD</AvatarFallback>
-              </Avatar>
-            </div>
-          </div>
+          <Button
+            asChild
+            variant="ghost"
+            size="sm"
+            className="px-0 text-xs text-muted-foreground hover:text-primary"
+            onClick={() => {
+              if (window.history.length > 1) {
+                window.history.back();
+              }
+            }}
+          >
+            <Link href="/entities">
+              <ArrowLeft className="w-4 h-4 mr-1" />
+              Back to entities
+            </Link>
+          </Button>
 
           {entity ? (
             <Card className="theme-panel border-none">

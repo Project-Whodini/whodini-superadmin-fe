@@ -5,7 +5,6 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
 import Dashboard from "@/pages/Dashboard";
-import UsersAccess from "@/pages/UsersAccess";
 import Entities from "@/pages/Entities";
 import EntityDetails from "@/pages/EntityDetails";
 import Invoices from "@/pages/Invoices";
@@ -21,7 +20,6 @@ function AppRoutes() {
       <Route path="/login" component={Login} />
       <Route path="/" component={Login} />
       <Route path="/dashboard" component={Dashboard} />
-      <Route path="/users" component={UsersAccess} />
       <Route path="/entities" component={Entities} />
       <Route path="/entities/:id" component={EntityDetails} />
       <Route path="/invoices" component={Invoices} />

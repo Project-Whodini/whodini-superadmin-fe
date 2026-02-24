@@ -3,6 +3,7 @@ import {
 } from "@/hooks/use-dashboard";
 import { Sidebar } from "@/components/Sidebar";
 import { StatCard } from "@/components/StatCard";
+import { PageHeader } from "@/components/PageHeader";
 import { 
   Users, 
   Building2, 
@@ -23,7 +24,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -464,17 +464,18 @@ export default function Dashboard() {
       <Sidebar />
       
       <main className="flex-1 overflow-y-auto max-h-screen">
-        <div className="container mx-auto p-4 md:p-8 space-y-8 max-w-7xl">
-          
-          {/* Header */}
-          <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <PageHeader />
+        <div className="container mx-auto p-4 md:p-8 space-y-6 max-w-7xl">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-display font-bold text-gradient">Dashboard</h1>
+              <h1 className="text-3xl font-display font-bold text-gradient">
+                Dashboard
+              </h1>
               <p className="text-muted-foreground mt-1">
-                High-level visibility into subscription activity, revenue distribution, and invoice/payment status across territories.
+                High-level visibility into subscription activity, revenue
+                distribution, and invoice/payment status across territories.
               </p>
             </div>
-
             <div className="flex items-center gap-3">
               <Select value={chartRange} onValueChange={setChartRange}>
                 <SelectTrigger className="w-[140px] bg-white border-none shadow-sm">
@@ -487,15 +488,8 @@ export default function Dashboard() {
                   <SelectItem value="30d">Last 30 Days</SelectItem>
                 </SelectContent>
               </Select>
-              <Button size="icon" variant="ghost" className="rounded-full bg-white shadow-sm text-muted-foreground hover:text-primary">
-                <Bell className="w-5 h-5" />
-              </Button>
-              <Avatar className="h-10 w-10 border-2 border-white shadow-sm cursor-pointer">
-                <AvatarImage src="https://github.com/shadcn.png" />
-                <AvatarFallback>AD</AvatarFallback>
-              </Avatar>
             </div>
-          </header>
+          </div>
 
           {/* Section A — Platform summary metrics (top cards) */}
           <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">

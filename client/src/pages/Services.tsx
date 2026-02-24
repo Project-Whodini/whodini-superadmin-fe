@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Sidebar } from "@/components/Sidebar";
+import { PageHeader } from "@/components/PageHeader";
 import {
   Card,
   CardContent,
@@ -24,7 +25,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Dialog,
   DialogContent,
@@ -100,30 +100,23 @@ export default function Services() {
       <Sidebar />
 
       <main className="flex-1 overflow-y-auto max-h-screen">
-        <div className="container mx-auto p-4 md:p-8 space-y-8 max-w-7xl">
-          <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div>
-              <h1 className="text-3xl font-display font-bold text-slate-900">
-                Services &amp; Feature Flags
-              </h1>
-              <p className="text-muted-foreground mt-1 max-w-2xl">
-                Configuration of core services and feature flags across modules.
-              </p>
-            </div>
-            <div className="flex items-center gap-3">
-              <Button
-                size="icon"
-                variant="ghost"
-                className="rounded-full bg-white shadow-sm text-muted-foreground hover:text-primary"
-              >
-                <Bell className="w-5 h-5" />
-              </Button>
-              <Avatar className="h-10 w-10 border-2 border-white shadow-sm cursor-pointer">
-                <AvatarImage src="https://github.com/shadcn.png" />
-                <AvatarFallback>AD</AvatarFallback>
-              </Avatar>
-            </div>
-          </header>
+        <PageHeader />
+        <div className="relative">
+          <div className="pointer-events-none select-none absolute inset-0 flex items-center justify-center z-20 mix-blend-multiply">
+            <span className="text-5xl md:text-7xl lg:text-8xl font-display font-bold tracking-[0.3em] uppercase text-slate-300/50 -rotate-12">
+              Coming soon
+            </span>
+          </div>
+
+          <div className="container mx-auto p-4 md:p-8 space-y-8 max-w-7xl relative z-10">
+          <div>
+            <h1 className="text-3xl font-display font-bold text-gradient">
+              Services &amp; Feature Flags
+            </h1>
+            <p className="text-muted-foreground mt-1 max-w-2xl">
+              Configuration of core services and feature flags across modules.
+            </p>
+          </div>
 
           <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
             <StatCard
@@ -622,6 +615,7 @@ export default function Services() {
               </CardContent>
             </Card>
           </section>
+          </div>
         </div>
       </main>
     </div>

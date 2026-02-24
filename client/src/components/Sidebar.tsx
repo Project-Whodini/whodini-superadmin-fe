@@ -3,7 +3,6 @@ import { cn } from "@/lib/utils";
 import appHeaderLogo from "@/assets/app-header-logo.png";
 import { 
   LayoutDashboard, 
-  Users, 
   UserCog,
   Building2, 
   ReceiptText,
@@ -21,7 +20,6 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 const NAV_ITEMS = [
   { label: "Dashboard", icon: LayoutDashboard, href: "/dashboard" },
-  { label: "Users & Access", icon: Users, href: "/users" },
   { label: "Entities", icon: Building2, href: "/entities" },
   { label: "Invoices", icon: ReceiptText, href: "/invoices" },
   { label: "Territories", icon: Map, href: "/territories" },
@@ -35,7 +33,7 @@ export function Sidebar() {
 
   const NavContent = () => (
     <div className="flex flex-col h-full bg-slate-50/50">
-      <div className="p-6 border-b border-border/40">
+      <div className="p-4 border-b border-border/40">
         <div className="flex items-center gap-3">
           <img
             src={appHeaderLogo}

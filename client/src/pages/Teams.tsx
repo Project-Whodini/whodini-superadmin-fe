@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Sidebar } from "@/components/Sidebar";
+import { PageHeader } from "@/components/PageHeader";
 import {
   Card,
   CardContent,
@@ -106,31 +107,17 @@ export default function Teams() {
       <Sidebar />
 
       <main className="flex-1 overflow-y-auto max-h-screen">
+        <PageHeader />
         <div className="container mx-auto p-4 md:p-8 space-y-8 max-w-7xl">
-          <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div>
-              <h1 className="text-3xl font-display font-bold text-slate-900">
-                Teams &amp; Staff
-              </h1>
-              <p className="text-muted-foreground mt-1 max-w-2xl">
-                Internal staff accounts responsible for managing entities,
-                territories, and billing.
-              </p>
-            </div>
-            <div className="flex items-center gap-3">
-              <Button
-                size="icon"
-                variant="ghost"
-                className="rounded-full bg-white shadow-sm text-muted-foreground hover:text-primary"
-              >
-                <Bell className="w-5 h-5" />
-              </Button>
-              <Avatar className="h-10 w-10 border-2 border-white shadow-sm cursor-pointer">
-                <AvatarImage src="https://github.com/shadcn.png" />
-                <AvatarFallback>AD</AvatarFallback>
-              </Avatar>
-            </div>
-          </header>
+          <div>
+            <h1 className="text-3xl font-display font-bold text-gradient">
+              Teams &amp; Staff
+            </h1>
+            <p className="text-muted-foreground mt-1 max-w-2xl">
+              Internal staff accounts responsible for managing entities,
+              territories, and billing.
+            </p>
+          </div>
 
           <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
             <StatCard

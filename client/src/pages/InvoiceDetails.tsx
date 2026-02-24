@@ -1,4 +1,5 @@
 import { Sidebar } from "@/components/Sidebar";
+import { PageHeader } from "@/components/PageHeader";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -36,28 +37,36 @@ export default function InvoiceDetails() {
       <Sidebar />
 
       <main className="flex-1 overflow-y-auto max-h-screen">
-        <div className="container mx-auto p-4 md:p-8 space-y-6 max-w-4xl">
-          <div className="flex items-center justify-between gap-4">
-            <Button
-              asChild
-              variant="ghost"
-              size="sm"
-              className="px-2 text-xs text-muted-foreground hover:text-primary"
-              onClick={() => {
-                if (window.history.length > 1) {
-                  window.history.back();
-                }
-              }}
-            >
-              <Link href="/invoices">
-                <ArrowLeft className="w-4 h-4 mr-1" />
-                Back to invoices
-              </Link>
-            </Button>
+        <PageHeader />
+        <div className="relative">
+          <div className="pointer-events-none select-none absolute inset-0 flex items-center justify-center z-20 mix-blend-multiply">
+            <span className="text-4xl md:text-6xl lg:text-7xl font-display font-bold tracking-[0.3em] uppercase text-slate-300/50 -rotate-12">
+              Coming soon
+            </span>
           </div>
 
-          {invoice ? (
-            <Card className="theme-panel border-none">
+          <div className="container mx-auto p-4 md:p-8 space-y-6 max-w-4xl relative z-10">
+            <div className="flex items-center justify-between gap-4">
+              <Button
+                asChild
+                variant="ghost"
+                size="sm"
+                className="px-2 text-xs text-muted-foreground hover:text-primary"
+                onClick={() => {
+                  if (window.history.length > 1) {
+                    window.history.back();
+                  }
+                }}
+              >
+                <Link href="/invoices">
+                  <ArrowLeft className="w-4 h-4 mr-1" />
+                  Back to invoices
+                </Link>
+              </Button>
+            </div>
+
+            {invoice ? (
+              <Card className="theme-panel border-none">
               <CardHeader className="flex flex-row items-center justify-between gap-4">
                 <div className="space-y-1">
                   <CardTitle className="text-2xl font-display">
@@ -209,6 +218,7 @@ export default function InvoiceDetails() {
               </CardContent>
             </Card>
           )}
+          </div>
         </div>
       </main>
     </div>
