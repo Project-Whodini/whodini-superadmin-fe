@@ -40,11 +40,13 @@ export default function Teams() {
   const [page, setPage] = useState(1);
   const pageSize = 10;
 
-  const totalStaff = staffTable.length;
-  const activeStaff = staffTable.filter((s) => s.status === "Active").length;
+  const [staff, setStaff] = useState<StaffRow[]>(staffTable);
+
+  const totalStaff = staff.length;
+  const activeStaff = staff.filter((s) => s.status === "Active").length;
 
   const filteredStaff = useMemo(() => {
-    return staffTable.filter((row) => {
+    return staff.filter((row) => {
       const matchesSearch =
         search.trim().length === 0 ||
         row.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -58,7 +60,7 @@ export default function Teams() {
 
       return matchesSearch && matchesRole && matchesStatus;
     });
-  }, [search, roleFilter, statusFilter]);
+  }, [staff, search, roleFilter, statusFilter]);
 
   useEffect(() => {
     setPage(1);
@@ -69,6 +71,19 @@ export default function Teams() {
     (page - 1) * pageSize,
     page * pageSize,
   );
+
+  function toggleStatus(id: string) {
+    setStaff((current) =>
+      current.map((row) =>
+        row.id === id
+          ? {
+              ...row,
+              status: row.status === "Active" ? "Inactive" : "Active",
+            }
+          : row,
+      ),
+    );
+  }
 
   return (
     <div className="flex min-h-screen bg-[#F8FAFC]">
@@ -182,6 +197,7 @@ export default function Teams() {
                       <TableHead>Status</TableHead>
                       <TableHead>Created</TableHead>
                       <TableHead>Last Active</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -211,12 +227,22 @@ export default function Teams() {
                         <TableCell className="text-sm text-slate-700">
                           {row.lastActive}
                         </TableCell>
+                        <TableCell className="text-right">
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="h-7 px-2 text-xs"
+                            onClick={() => toggleStatus(row.id)}
+                          >
+                            {row.status === "Active" ? "Deactivate" : "Activate"}
+                          </Button>
+                        </TableCell>
                       </TableRow>
                     ))}
                     {filteredStaff.length === 0 && (
                       <TableRow>
                         <TableCell
-                          colSpan={6}
+                          colSpan={7}
                           className="py-8 text-center text-sm text-muted-foreground"
                         >
                           No staff match the current filters.

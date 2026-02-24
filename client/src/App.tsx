@@ -9,6 +9,7 @@ import UsersAccess from "@/pages/UsersAccess";
 import Entities from "@/pages/Entities";
 import EntityDetails from "@/pages/EntityDetails";
 import Invoices from "@/pages/Invoices";
+import InvoiceDetails from "@/pages/InvoiceDetails";
 import Territories from "@/pages/Territories";
 import Teams from "@/pages/Teams";
 import Services from "@/pages/Services";
@@ -24,6 +25,7 @@ function AppRoutes() {
       <Route path="/entities" component={Entities} />
       <Route path="/entities/:id" component={EntityDetails} />
       <Route path="/invoices" component={Invoices} />
+      <Route path="/invoices/:id" component={InvoiceDetails} />
       <Route path="/territories" component={Territories} />
       <Route path="/teams" component={Teams} />
       <Route path="/services" component={Services} />

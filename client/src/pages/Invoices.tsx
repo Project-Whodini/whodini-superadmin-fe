@@ -32,6 +32,7 @@ import {
   type InvoiceRow,
   type InvoiceStatus,
 } from "@/data/invoices";
+import { Link } from "wouter";
 
 function statusBadgeVariant(status: InvoiceStatus) {
   if (status === "Paid") {
@@ -232,6 +233,7 @@ export default function Invoices() {
                       <TableHead>Issued Date</TableHead>
                       <TableHead>Due Date</TableHead>
                       <TableHead>Territory</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -261,12 +263,24 @@ export default function Invoices() {
                         <TableCell>{row.issuedDate}</TableCell>
                         <TableCell>{row.dueDate}</TableCell>
                         <TableCell>{row.territory}</TableCell>
+                        <TableCell className="text-right">
+                          <Button
+                            asChild
+                            size="sm"
+                            variant="ghost"
+                            className="h-7 px-2 text-xs text-primary hover:text-primary hover:bg-primary/5"
+                          >
+                            <Link href={`/invoices/${row.invoiceId}`}>
+                              View
+                            </Link>
+                          </Button>
+                        </TableCell>
                       </TableRow>
                     ))}
                     {filteredInvoices.length === 0 && (
                       <TableRow>
                         <TableCell
-                          colSpan={8}
+                          colSpan={9}
                           className="py-8 text-center text-sm text-muted-foreground"
                         >
                           No invoices match the current filters.

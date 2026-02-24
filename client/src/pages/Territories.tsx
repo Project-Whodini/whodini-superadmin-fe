@@ -53,10 +53,12 @@ export default function Territories() {
   const [page, setPage] = useState(1);
   const pageSize = 10;
 
-  const enabledTerritories = territoriesTable.filter(
+  const [territories, setTerritories] = useState(territoriesTable);
+
+  const enabledTerritories = territories.filter(
     (territory) => territory.status === "Enabled",
   ).length;
-  const totalTerritoryEntities = territoriesTable.reduce(
+  const totalTerritoryEntities = territories.reduce(
     (sum, territory) => sum + territory.entities,
     0,
   );
@@ -76,7 +78,7 @@ export default function Territories() {
     return code.toLowerCase();
   };
 
-  const combinedTerritoriesWithRevenue = territoriesTable.map((row) => {
+  const combinedTerritoriesWithRevenue = territories.map((row) => {
     const revenueRow =
       territoryRevenueLookup[mapTerritoryCodeToRevenueKey(row.code)];
     const totalRevenue =
@@ -131,6 +133,19 @@ export default function Territories() {
     (page - 1) * pageSize,
     page * pageSize,
   );
+
+  function toggleStatus(code: string) {
+    setTerritories((current) =>
+      current.map((row) =>
+        row.code === code
+          ? {
+              ...row,
+              status: row.status === "Enabled" ? "Disabled" : "Enabled",
+            }
+          : row,
+      ),
+    );
+  }
 
   return (
     <div className="flex min-h-screen bg-[#F8FAFC]">
@@ -270,6 +285,7 @@ export default function Territories() {
                       <TableHead className="text-right">
                         % of Total Revenue
                       </TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -323,13 +339,23 @@ export default function Territories() {
                           <TableCell className="text-right font-medium">
                             {contribution}%
                           </TableCell>
+                          <TableCell className="text-right">
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="h-7 px-2 text-xs"
+                              onClick={() => toggleStatus(row.code)}
+                            >
+                              {row.status === "Enabled" ? "Disable" : "Enable"}
+                            </Button>
+                          </TableCell>
                         </TableRow>
                       );
                     })}
                     {filteredTerritories.length === 0 && (
                       <TableRow>
                         <TableCell
-                          colSpan={7}
+                          colSpan={8}
                           className="py-8 text-center text-sm text-muted-foreground"
                         >
                           No territories match the current filters.
