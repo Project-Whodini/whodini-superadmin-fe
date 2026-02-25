@@ -34,7 +34,7 @@ export type EntityStatus = "pending" | "approved" | "rejected";
 export type EntityRow = {
   id: string;
   name: string;
-  type: "Business" | "Community" | "Personal";
+  type: "Business" | "Community" | "Personal" | "Agency" | "Event Organizer";
   owner: string;
   ownerEmail: string;
   territory: string;
@@ -93,6 +93,86 @@ export const ENTITIES: EntityRow[] = [
     created: "2026-01-25",
     status: "rejected",
   },
+  {
+    id: "ENT_006",
+    name: "Vertex Creative",
+    type: "Business",
+    owner: "Olivia Park",
+    ownerEmail: "olivia@vertexcreative.co",
+    territory: "US-West",
+    created: "2026-02-06",
+    status: "approved",
+  },
+  {
+    id: "ENT_007",
+    name: "Summit Foods Group",
+    type: "Business",
+    owner: "Daniel Kim",
+    ownerEmail: "daniel@summitfoods.com",
+    territory: "EU-West",
+    created: "2026-02-04",
+    status: "approved",
+  },
+  {
+    id: "ENT_008",
+    name: "Lighthouse Media",
+    type: "Business",
+    owner: "Priya Singh",
+    ownerEmail: "priya@lighthousemedia.tv",
+    territory: "US-East",
+    created: "2026-02-02",
+    status: "approved",
+  },
+  {
+    id: "ENT_009",
+    name: "Blue Harbor Logistics",
+    type: "Business",
+    owner: "Aaron Blake",
+    ownerEmail: "aaron@blueharbor.io",
+    territory: "APAC",
+    created: "2026-01-30",
+    status: "approved",
+  },
+  {
+    id: "ENT_010",
+    name: "Mia Collins",
+    type: "Personal",
+    owner: "Mia Collins",
+    ownerEmail: "mia.collins@example.com",
+    territory: "US-East",
+    created: "2026-02-06",
+    status: "approved",
+  },
+  {
+    id: "ENT_011",
+    name: "Helios Creative Agency",
+    type: "Agency",
+    owner: "Mark Evans",
+    ownerEmail: "mark@helioscreative.agency",
+    territory: "APAC",
+    created: "2026-02-04",
+    status: "approved",
+  },
+  {
+    id: "ENT_012",
+    name: "Bright Lights Festival Co.",
+    type: "Event Organizer",
+    owner: "Hannah Lee",
+    ownerEmail: "hannah@brightlightsfest.com",
+    territory: "US-West",
+    created: "2026-02-03",
+    status: "approved",
+  },
+  {
+    id: "ENT_013",
+    name: "Neighborhood Makers Collective",
+    type: "Community",
+    owner: "Jasmine Cole",
+    ownerEmail: "jasmine@makerscollective.org",
+    territory: "US-East",
+    created: "2026-02-02",
+    status: "pending",
+  },
 ];
 
 function statusBadgeVariant(status: EntityStatus) {
@@ -110,7 +190,7 @@ export default function Entities() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<"all" | EntityStatus>("all");
   const [typeFilter, setTypeFilter] = useState<
-    "all" | "Business" | "Community" | "Personal"
+    "all" | "Business" | "Community" | "Personal" | "Agency" | "Event Organizer"
   >("all");
   const [page, setPage] = useState(1);
   const pageSize = 10;
@@ -123,21 +203,26 @@ export default function Entities() {
   }, [entities]);
 
   const filteredEntities = useMemo(() => {
-    return entities.filter((entity) => {
-      const matchesSearch =
-        search.trim().length === 0 ||
-        entity.name.toLowerCase().includes(search.toLowerCase()) ||
-        entity.owner.toLowerCase().includes(search.toLowerCase()) ||
-        entity.id.toLowerCase().includes(search.toLowerCase());
+    return entities
+      .filter((entity) => {
+        const matchesSearch =
+          search.trim().length === 0 ||
+          entity.name.toLowerCase().includes(search.toLowerCase()) ||
+          entity.owner.toLowerCase().includes(search.toLowerCase()) ||
+          entity.id.toLowerCase().includes(search.toLowerCase());
 
-      const matchesStatus =
-        statusFilter === "all" || entity.status === statusFilter;
+        const matchesStatus =
+          statusFilter === "all" || entity.status === statusFilter;
 
-      const matchesType =
-        typeFilter === "all" || entity.type === typeFilter;
+        const matchesType =
+          typeFilter === "all" || entity.type === typeFilter;
 
-      return matchesSearch && matchesStatus && matchesType;
-    });
+        return matchesSearch && matchesStatus && matchesType;
+      })
+      .sort(
+        (a, b) =>
+          new Date(b.created).getTime() - new Date(a.created).getTime(),
+      );
   }, [entities, search, statusFilter, typeFilter]);
 
   useEffect(() => {
@@ -237,7 +322,13 @@ export default function Entities() {
                   <Select
                     value={typeFilter}
                     onValueChange={(
-                      value: "all" | "Business" | "Community" | "Personal",
+                      value:
+                        | "all"
+                        | "Business"
+                        | "Community"
+                        | "Personal"
+                        | "Agency"
+                        | "Event Organizer",
                     ) => setTypeFilter(value)}
                   >
                     <SelectTrigger className="h-8 w-[150px] rounded-lg border border-slate-200 bg-white text-xs font-medium text-slate-700">
@@ -248,6 +339,8 @@ export default function Entities() {
                       <SelectItem value="Business">Business</SelectItem>
                       <SelectItem value="Community">Community</SelectItem>
                       <SelectItem value="Personal">Personal</SelectItem>
+                      <SelectItem value="Agency">Agency</SelectItem>
+                      <SelectItem value="Event Organizer">Event Organizer</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

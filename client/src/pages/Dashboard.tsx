@@ -14,9 +14,11 @@ import {
   CalendarDays,
   Bell,
   Wallet,
-  BarChart3
+  BarChart3,
+  Search,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -56,6 +58,8 @@ import {
   billingRevenueByTerritoryTable,
 } from "@/data/territories";
 import { billingRecentInvoicesTable } from "@/data/invoices";
+import { ENTITIES } from "@/pages/Entities";
+import { Link } from "wouter";
 
 const entitiesTable = [
   {
@@ -84,6 +88,120 @@ const entitiesTable = [
     status: "Active",
     created: "2026-02-01",
     owner: "Carla Gomez",
+  },
+];
+
+const eventOrganizersTable = [
+  {
+    id: "EORG_001",
+    name: "Bright Lights Festival Co.",
+    owner: "Hannah Lee",
+    ownerEmail: "hannah@brightlightsfest.com",
+    created: "2026-02-06",
+  },
+  {
+    id: "EORG_002",
+    name: "Summit City Events",
+    owner: "Marcus Green",
+    ownerEmail: "marcus@summitcityevents.io",
+    created: "2026-02-05",
+  },
+  {
+    id: "EORG_003",
+    name: "Harborline Conferences",
+    owner: "Amelia Ross",
+    ownerEmail: "amelia@harborlineconf.com",
+    created: "2026-02-04",
+  },
+  {
+    id: "EORG_004",
+    name: "Aurora Live Productions",
+    owner: "Noah Patel",
+    ownerEmail: "noah@auroralive.pro",
+    created: "2026-02-03",
+  },
+  {
+    id: "EORG_005",
+    name: "Neighborhood Block Party Co.",
+    owner: "Grace Miller",
+    ownerEmail: "grace@blockpartyco.org",
+    created: "2026-02-02",
+  },
+];
+
+const communitiesTable = [
+  {
+    id: "COMM_001",
+    name: "Neighborhood Makers Collective",
+    owner: "Jasmine Cole",
+    ownerEmail: "jasmine@makerscollective.org",
+    created: "2026-02-06",
+  },
+  {
+    id: "COMM_002",
+    name: "Urban Garden Network",
+    owner: "Leo Martinez",
+    ownerEmail: "leo@urbangarden.network",
+    created: "2026-02-04",
+  },
+  {
+    id: "COMM_003",
+    name: "Global Youth Alliance",
+    owner: "Sofia Petrova",
+    ownerEmail: "sofia@gyalliance.org",
+    created: "2026-02-02",
+  },
+  {
+    id: "COMM_004",
+    name: "Harbor Arts Council",
+    owner: "Ethan Walsh",
+    ownerEmail: "ethan@harborarts.org",
+    created: "2026-01-31",
+  },
+  {
+    id: "COMM_005",
+    name: "Community Hub LA",
+    owner: "Carla Gomez",
+    ownerEmail: "carla@communityla.org",
+    created: "2026-02-01",
+  },
+];
+
+const agenciesTable = [
+  {
+    id: "AGCY_001",
+    name: "Atlas Retail Agency",
+    owner: "Nina Cruz",
+    ownerEmail: "nina@atlasretail.com",
+    created: "2026-02-06",
+  },
+  {
+    id: "AGCY_002",
+    name: "Helios Creative Agency",
+    owner: "Mark Evans",
+    ownerEmail: "mark@helioscreative.agency",
+    created: "2026-02-04",
+  },
+  {
+    id: "AGCY_003",
+    name: "Northwind Brand Partners",
+    owner: "Maria Santos",
+    ownerEmail: "maria@northwindpartners.co",
+    created: "2026-02-03",
+  },
+  {
+    id: "AGCY_004",
+    name: "Summit City Media Group",
+    owner: "Daniel Kim",
+    ownerEmail: "daniel@summitmediagroup.io",
+    created: "2026-02-02",
+  },
+  {
+    id: "AGCY_005",
+    name: "Harborline Talent Agency",
+    owner: "Amelia Ross",
+    ownerEmail: "amelia@harborlinetalent.com",
+    created: "2026-02-01",
   },
 ];
 
@@ -203,6 +321,10 @@ export default function Dashboard() {
   const [billingInvoiceStatusFilter, setBillingInvoiceStatusFilter] = useState("all");
   const [billingInvoiceDateRangeFilter, setBillingInvoiceDateRangeFilter] = useState("all");
   const [billingInvoiceTerritoryFilter, setBillingInvoiceTerritoryFilter] = useState("all");
+  const [activeBusinessSearch, setActiveBusinessSearch] = useState("");
+  const [eventOrganizerSearch, setEventOrganizerSearch] = useState("");
+  const [communitySearch, setCommunitySearch] = useState("");
+  const [agencySearch, setAgencySearch] = useState("");
 
   // Assuming we get the latest day's stats for cards
   const todayStats = stats?.[0];
@@ -433,6 +555,89 @@ export default function Dashboard() {
     ? Math.round(currentMrr / totalActiveSubscriptions)
     : 0;
 
+  const activeBusinessSubscriptions = billingSubscriptionsTable.filter(
+    (row) => row.status === "Active" && row.planName === "Business / Brand"
+  );
+  const totalActiveBusinesses = activeBusinessSubscriptions.length;
+  const activeBusinessRevenue = activeBusinessSubscriptions.reduce(
+    (sum, row) => sum + row.amount,
+    0
+  );
+  const newActiveBusinessesLast30Days = activeBusinessSubscriptions.filter((row) =>
+    inLastDays(row.createdDate, 30)
+  ).length;
+
+  const registeredBusinessBrands = billingSubscriptionsTable.filter(
+    (row) => row.planName === "Business / Brand"
+  ).length;
+  const registeredCommunitiesOrganizations = billingSubscriptionsTable.filter(
+    (row) => row.planName === "Community / Organization"
+  ).length;
+  const registeredEventOrganizers = billingSubscriptionsTable.filter(
+    (row) => row.planName === "Event Organizer"
+  ).length;
+  const registeredAgencies = billingSubscriptionsTable.filter(
+    (row) => row.planName === "Agency"
+  ).length;
+
+  const activeBusinessEntities = ENTITIES.filter(
+    (entity) => entity.type === "Business" && entity.status === "approved"
+  ).sort(
+    (a, b) =>
+      new Date(b.created).getTime() - new Date(a.created).getTime()
+  );
+
+  const filteredActiveBusinesses = activeBusinessEntities.filter((entity) => {
+    const matchesSearch =
+      activeBusinessSearch.trim().length === 0 ||
+      entity.name.toLowerCase().includes(activeBusinessSearch.toLowerCase()) ||
+      entity.owner.toLowerCase().includes(activeBusinessSearch.toLowerCase()) ||
+      entity.id.toLowerCase().includes(activeBusinessSearch.toLowerCase());
+    return matchesSearch;
+  });
+
+  const filteredEventOrganizers = [...eventOrganizersTable]
+    .sort(
+      (a, b) =>
+        new Date(b.created).getTime() - new Date(a.created).getTime()
+    )
+    .filter((entity) => {
+      const matchesSearch =
+        eventOrganizerSearch.trim().length === 0 ||
+        entity.name.toLowerCase().includes(eventOrganizerSearch.toLowerCase()) ||
+        entity.owner.toLowerCase().includes(eventOrganizerSearch.toLowerCase()) ||
+        entity.id.toLowerCase().includes(eventOrganizerSearch.toLowerCase());
+      return matchesSearch;
+    });
+
+  const filteredCommunities = [...communitiesTable]
+    .sort(
+      (a, b) =>
+        new Date(b.created).getTime() - new Date(a.created).getTime()
+    )
+    .filter((entity) => {
+      const matchesSearch =
+        communitySearch.trim().length === 0 ||
+        entity.name.toLowerCase().includes(communitySearch.toLowerCase()) ||
+        entity.owner.toLowerCase().includes(communitySearch.toLowerCase()) ||
+        entity.id.toLowerCase().includes(communitySearch.toLowerCase());
+      return matchesSearch;
+    });
+
+  const filteredAgencies = [...agenciesTable]
+    .sort(
+      (a, b) =>
+        new Date(b.created).getTime() - new Date(a.created).getTime()
+    )
+    .filter((entity) => {
+      const matchesSearch =
+        agencySearch.trim().length === 0 ||
+        entity.name.toLowerCase().includes(agencySearch.toLowerCase()) ||
+        entity.owner.toLowerCase().includes(agencySearch.toLowerCase()) ||
+        entity.id.toLowerCase().includes(agencySearch.toLowerCase());
+      return matchesSearch;
+    });
+
   const totalPaidInvoicesThisMonth = billingRecentInvoicesTable.filter(
     (row) =>
       row.status === "Paid" &&
@@ -498,1207 +703,399 @@ export default function Dashboard() {
             ) : todayStats ? (
               <>
                 <StatCard 
-                  title="Total Registered Users" 
+                  title="Registered Users" 
                   value={todayStats.totalUsers.toLocaleString()}
                   subValue={`${todayStats.activeUsersDaily} active today`}
                   trend={calculateTrend(todayStats.totalUsers, yesterdayStats?.totalUsers || 0)}
                   icon={<Users className="w-4 h-4" />}
                 />
                 <StatCard 
-                  title="Total Active Entities" 
-                  value={todayStats.activeEntities.toLocaleString()}
-                  subValue={`${todayStats.totalEntities} total`}
-                  trend={calculateTrend(todayStats.activeEntities, yesterdayStats?.activeEntities || 0)}
+                  title="Registered Businesses / Brands" 
+                  value={registeredBusinessBrands.toLocaleString()}
+                  subValue="Accounts on Business / Brand plans"
                   icon={<Building2 className="w-4 h-4" />}
                 />
                 <StatCard 
-                  title="Active Subscriptions" 
-                  value={todayStats.activeSubscriptions.toLocaleString()}
-                  subValue="Entities with active paid plans"
-                  trend={calculateTrend(todayStats.activeSubscriptions, yesterdayStats?.activeSubscriptions || 0)}
-                  icon={<CreditCard className="w-4 h-4" />}
+                  title="Registered Communities / Organizations" 
+                  value={registeredCommunitiesOrganizations.toLocaleString()}
+                  subValue="Accounts on Community / Organization plans"
+                  icon={<Users className="w-4 h-4" />}
                 />
                 <StatCard 
-                  title="Total Territories Enabled" 
-                  value={territoriesTable.filter(t => t.status === "Enabled").length}
-                  subValue="Enabled regions across the platform"
-                  icon={<MapPinned className="w-4 h-4" />}
+                  title="Registered Event Organizers" 
+                  value={registeredEventOrganizers.toLocaleString()}
+                  subValue="Accounts on Event Organizer plans"
+                  icon={<CalendarDays className="w-4 h-4" />}
                 />
                 <StatCard 
-                  title="Internal Staff Accounts" 
-                  value={staffTable.length}
-                  subValue="Whodini team members with platform access"
-                  icon={<ShieldCheck className="w-4 h-4" />}
-                />
-                <StatCard 
-                  title="Active Feature Flags" 
-                  value={featureFlagsTable.length}
-                  subValue="Enabled modules and experiments"
-                  icon={<Flag className="w-4 h-4" />}
+                  title="Registered Agencies" 
+                  value={registeredAgencies.toLocaleString()}
+                  subValue="Accounts on Agency plans"
+                  icon={<Building2 className="w-4 h-4" />}
                 />
               </>
             ) : null}
           </section>
 
-          {/* Analytics charts */}
-          {false && (
-          <section className="space-y-6">
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-display font-semibold text-slate-900">
-                Analytics
-              </h2>
-              <Button
-                size="sm"
-                variant="ghost"
-                className="h-8 text-xs text-primary hover:text-primary hover:bg-primary/10"
-              >
-                View all
-              </Button>
-            </div>
-
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-              <Card className="theme-panel border-none">
-                <CardHeader>
+          {/* Active businesses table */}
+          <section className="space-y-3">
+            <Card className="theme-panel border-none">
+              <CardHeader className="pb-2 flex flex-row items-center justify-between gap-4">
+                <div>
                   <CardTitle className="text-base font-display">
-                    Entity & Subscription Trend
+                    Active businesses
                   </CardTitle>
-                  <p className="text-xs text-muted-foreground">
-                    {chartRange === "30d"
-                      ? "Last 30 days growth trend."
-                      : chartRange === "14d"
-                      ? "Last 14 days growth trend."
-                      : "Last 7 days growth trend."}
-                  </p>
-                </CardHeader>
-                <CardContent className="h-[300px]">
-                  {statsLoading ? (
-                    <Skeleton className="h-full w-full rounded-xl" />
-                  ) : (
-                    <ResponsiveContainer width="100%" height="100%">
-                      <LineChart data={growthChartData} margin={{ top: 8, right: 8, left: -20, bottom: 0 }}>
-                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
-                        <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: "#6B7280" }} dy={8} />
-                        <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: "#6B7280" }} />
-                        <RechartsTooltip contentStyle={{ borderRadius: "12px", borderColor: "#E5E7EB", fontSize: "12px" }} />
-                        <Legend />
-                        <Line type="monotone" dataKey="entities" name="Entities" stroke="#F97316" strokeWidth={2.5} dot={false} />
-                        <Line type="monotone" dataKey="subscriptions" name="Subscriptions" stroke="#0EA5E9" strokeWidth={2.5} dot={false} />
-                      </LineChart>
-                    </ResponsiveContainer>
-                  )}
-                </CardContent>
-              </Card>
-
-              <Card className="theme-panel border-none">
-                <CardHeader>
-                  <CardTitle className="text-base font-display">MRR Trend</CardTitle>
-                  <p className="text-xs text-muted-foreground">Monthly recurring revenue over selected range.</p>
-                </CardHeader>
-                <CardContent className="h-[300px]">
-                  {statsLoading ? (
-                    <Skeleton className="h-full w-full rounded-xl" />
-                  ) : (
-                    <ResponsiveContainer width="100%" height="100%">
-                      <AreaChart data={mrrChartData} margin={{ top: 8, right: 8, left: -20, bottom: 0 }}>
-                        <defs>
-                          <linearGradient id="mrrFill" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor="#F97316" stopOpacity={0.35} />
-                            <stop offset="95%" stopColor="#F97316" stopOpacity={0.05} />
-                          </linearGradient>
-                        </defs>
-                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
-                        <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: "#6B7280" }} dy={8} />
-                        <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: "#6B7280" }} />
-                        <RechartsTooltip contentStyle={{ borderRadius: "12px", borderColor: "#E5E7EB", fontSize: "12px" }} />
-                        <Area type="monotone" dataKey="mrr" name="MRR ($)" stroke="#F97316" fill="url(#mrrFill)" strokeWidth={2.5} />
-                      </AreaChart>
-                    </ResponsiveContainer>
-                  )}
-                </CardContent>
-              </Card>
-            </div>
-
-            <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-              <Card className="theme-panel border-none">
-                <CardHeader>
-                  <CardTitle className="text-base font-display">User Activity</CardTitle>
-                  <p className="text-xs text-muted-foreground">Daily vs weekly active users.</p>
-                </CardHeader>
-                <CardContent className="h-[250px]">
-                  {statsLoading ? (
-                    <Skeleton className="h-full w-full rounded-xl" />
-                  ) : (
-                    <ResponsiveContainer width="100%" height="100%">
-                      <LineChart data={userActivityChartData} margin={{ top: 8, right: 8, left: -20, bottom: 0 }}>
-                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
-                        <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: "#6B7280" }} dy={8} />
-                        <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: "#6B7280" }} />
-                        <RechartsTooltip contentStyle={{ borderRadius: "12px", borderColor: "#E5E7EB", fontSize: "12px" }} />
-                        <Line type="monotone" dataKey="dailyActive" name="Daily Active" stroke="#0EA5E9" strokeWidth={2.2} dot={false} />
-                        <Line type="monotone" dataKey="weeklyActive" name="Weekly Active" stroke="#6366F1" strokeWidth={2.2} dot={false} />
-                      </LineChart>
-                    </ResponsiveContainer>
-                  )}
-                </CardContent>
-              </Card>
-
-              <Card className="theme-panel border-none">
-                <CardHeader>
-                  <CardTitle className="text-base font-display">Platform Ratios</CardTitle>
-                  <p className="text-xs text-muted-foreground">Subscription and active-entity rates.</p>
-                </CardHeader>
-                <CardContent className="h-[250px]">
-                  {statsLoading ? (
-                    <Skeleton className="h-full w-full rounded-xl" />
-                  ) : (
-                    <ResponsiveContainer width="100%" height="100%">
-                      <LineChart data={ratioChartData} margin={{ top: 8, right: 8, left: -20, bottom: 0 }}>
-                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
-                        <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: "#6B7280" }} dy={8} />
-                        <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: "#6B7280" }} domain={[0, 100]} />
-                        <RechartsTooltip contentStyle={{ borderRadius: "12px", borderColor: "#E5E7EB", fontSize: "12px" }} />
-                        <Line type="monotone" dataKey="subToEntityRate" name="Subs / Active Entities %" stroke="#F97316" strokeWidth={2.2} dot={false} />
-                        <Line type="monotone" dataKey="entityActiveRate" name="Active / Total Entities %" stroke="#8B5CF6" strokeWidth={2.2} dot={false} />
-                      </LineChart>
-                    </ResponsiveContainer>
-                  )}
-                </CardContent>
-              </Card>
-
-              <Card className="theme-panel border-none">
-                <CardHeader>
-                  <CardTitle className="text-base font-display">
-                    Services, Billing & Payments
-                  </CardTitle>
-                  <p className="text-xs text-muted-foreground">
-                    Plan-level billing amount and payment/subscription mix.
-                  </p>
-                </CardHeader>
-                <CardContent className="h-[250px]">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart
-                      data={serviceBillingPaymentsData}
-                      margin={{ top: 8, right: 8, left: -20, bottom: 0 }}
-                    >
-                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
-                      <XAxis
-                        dataKey="plan"
-                        axisLine={false}
-                        tickLine={false}
-                        tick={{ fontSize: 12, fill: "#6B7280" }}
-                        dy={8}
-                      />
-                      <YAxis
-                        yAxisId="amount"
-                        axisLine={false}
-                        tickLine={false}
-                        tick={{ fontSize: 12, fill: "#6B7280" }}
-                      />
-                      <YAxis
-                        yAxisId="count"
-                        orientation="right"
-                        axisLine={false}
-                        tickLine={false}
-                        tick={{ fontSize: 12, fill: "#6B7280" }}
-                      />
-                      <RechartsTooltip
-                        contentStyle={{
-                          borderRadius: "12px",
-                          borderColor: "#E5E7EB",
-                          fontSize: "12px",
-                        }}
-                      />
-                      <Legend />
-                      <Bar
-                        yAxisId="amount"
-                        dataKey="billedAmount"
-                        name="Billed Amount ($)"
-                        fill="#F97316"
-                        radius={[4, 4, 0, 0]}
-                      />
-                      <Bar
-                        yAxisId="count"
-                        dataKey="activePayments"
-                        name="Active Payments"
-                        fill="#0EA5E9"
-                        radius={[4, 4, 0, 0]}
-                      />
-                      <Bar
-                        yAxisId="count"
-                        dataKey="trialSubscriptions"
-                        name="Trials"
-                        fill="#8B5CF6"
-                        radius={[4, 4, 0, 0]}
-                      />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </CardContent>
-              </Card>
-            </div>
-
-            <Card className="theme-panel border-none">
-              <CardHeader>
-                <CardTitle className="text-base font-display">
-                  Services, Billing & Payments (By Date)
-                </CardTitle>
-                <p className="text-xs text-muted-foreground">
-                  Date trend for billed amount and active payment volume.
-                </p>
-              </CardHeader>
-              <CardContent className="h-[280px]">
-                {statsLoading ? (
-                  <Skeleton className="h-full w-full rounded-xl" />
-                ) : (
-                  <ResponsiveContainer width="100%" height="100%">
-                    <LineChart
-                      data={serviceBillingPaymentsByDateData}
-                      margin={{ top: 8, right: 8, left: -20, bottom: 0 }}
-                    >
-                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
-                      <XAxis
-                        dataKey="name"
-                        axisLine={false}
-                        tickLine={false}
-                        tick={{ fontSize: 12, fill: "#6B7280" }}
-                        dy={8}
-                      />
-                      <YAxis
-                        yAxisId="amount"
-                        axisLine={false}
-                        tickLine={false}
-                        tick={{ fontSize: 12, fill: "#6B7280" }}
-                      />
-                      <YAxis
-                        yAxisId="count"
-                        orientation="right"
-                        axisLine={false}
-                        tickLine={false}
-                        tick={{ fontSize: 12, fill: "#6B7280" }}
-                      />
-                      <RechartsTooltip
-                        contentStyle={{
-                          borderRadius: "12px",
-                          borderColor: "#E5E7EB",
-                          fontSize: "12px",
-                        }}
-                      />
-                      <Legend />
-                      <Line
-                        yAxisId="amount"
-                        type="monotone"
-                        dataKey="billedAmount"
-                        name="Billed Amount ($)"
-                        stroke="#F97316"
-                        strokeWidth={2.5}
-                        dot={false}
-                      />
-                      <Line
-                        yAxisId="count"
-                        type="monotone"
-                        dataKey="activePayments"
-                        name="Active Payments"
-                        stroke="#0EA5E9"
-                        strokeWidth={2.5}
-                        dot={false}
-                      />
-                    </LineChart>
-                  </ResponsiveContainer>
-                )}
-              </CardContent>
-            </Card>
-
-          </section>
-          )}
-
-          <section className="space-y-6">
-
-            <div className="space-y-3">
-              <p className="text-sm font-semibold text-slate-900">Revenue Metrics</p>
-              <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <StatCard title="Current MRR" value={formatCurrencyAmount(currentMrr, "USD")} icon={<Wallet className="w-4 h-4" />} />
-                <StatCard title="Revenue This Month (MTD)" value={formatCurrencyAmount(revenueThisMonth, "USD")} icon={<BarChart3 className="w-4 h-4" />} />
-              </section>
-            </div>
-
-            <Card className="theme-panel border-none">
-              <CardHeader className="pb-2 flex flex-row items-center justify-between gap-4">
-                <div>
-                  <CardTitle className="text-base font-display">Recent Subscription Activity</CardTitle>
                   <p className="text-xs text-muted-foreground mt-1">
-                    Billing overview table for subscriptions with renewal tracking.
+                    List of all approved business entities across territories.
                   </p>
                 </div>
                 <div className="flex items-center gap-2 flex-wrap">
-                  <FilterSelect value={billingSubscriptionStatusFilter} onValueChange={setBillingSubscriptionStatusFilter}>
-                    <FilterSelectTrigger className="h-8 w-[150px] rounded-lg border border-slate-200 bg-white text-xs font-medium text-slate-700">
-                      <FilterSelectValue placeholder="Status" />
-                    </FilterSelectTrigger>
-                    <FilterSelectContent>
-                      <FilterSelectItem value="all">All status</FilterSelectItem>
-                      <FilterSelectItem value="active">Active</FilterSelectItem>
-                      <FilterSelectItem value="trial">Trial</FilterSelectItem>
-                      <FilterSelectItem value="canceled">Canceled</FilterSelectItem>
-                    </FilterSelectContent>
-                  </FilterSelect>
-                  <FilterSelect value={billingSubscriptionPlanFilter} onValueChange={setBillingSubscriptionPlanFilter}>
-                    <FilterSelectTrigger className="h-8 w-[150px] rounded-lg border border-slate-200 bg-white text-xs font-medium text-slate-700">
-                      <FilterSelectValue placeholder="Plan" />
-                    </FilterSelectTrigger>
-                    <FilterSelectContent>
-                      <FilterSelectItem value="all">All plans</FilterSelectItem>
-                      <FilterSelectItem value="personal">Personal</FilterSelectItem>
-                      <FilterSelectItem value="business-brand">Business / Brand</FilterSelectItem>
-                      <FilterSelectItem value="community-organization">Community / Organization</FilterSelectItem>
-                      <FilterSelectItem value="event-organizer">Event Organizer</FilterSelectItem>
-                      <FilterSelectItem value="agency">Agency</FilterSelectItem>
-                    </FilterSelectContent>
-                  </FilterSelect>
-                  <FilterSelect value={billingSubscriptionTerritoryFilter} onValueChange={setBillingSubscriptionTerritoryFilter}>
-                    <FilterSelectTrigger className="h-8 w-[150px] rounded-lg border border-slate-200 bg-white text-xs font-medium text-slate-700">
-                      <FilterSelectValue placeholder="Territory" />
-                    </FilterSelectTrigger>
-                    <FilterSelectContent>
-                      <FilterSelectItem value="all">All territories</FilterSelectItem>
-                      <FilterSelectItem value="us-east">US-East</FilterSelectItem>
-                      <FilterSelectItem value="us-west">US-West</FilterSelectItem>
-                      <FilterSelectItem value="eu-west">EU-West</FilterSelectItem>
-                      <FilterSelectItem value="apac">APAC</FilterSelectItem>
-                    </FilterSelectContent>
-                  </FilterSelect>
-                  <FilterSelect value={billingRenewalRangeFilter} onValueChange={setBillingRenewalRangeFilter}>
-                    <FilterSelectTrigger className="h-8 w-[170px] rounded-lg border border-slate-200 bg-white text-xs font-medium text-slate-700">
-                      <FilterSelectValue placeholder="Renewal Date Range" />
-                    </FilterSelectTrigger>
-                    <FilterSelectContent>
-                      <FilterSelectItem value="all">All renewal dates</FilterSelectItem>
-                      <FilterSelectItem value="next7">Next 7 days</FilterSelectItem>
-                      <FilterSelectItem value="next30">Next 30 days</FilterSelectItem>
-                    </FilterSelectContent>
-                  </FilterSelect>
-                </div>
-              </CardHeader>
-              <CardContent className="p-0">
-                <div className="border-b border-border p-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-3">
-                    <div className="rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
-                      <div>
-                        <p className="text-[10px] font-semibold uppercase tracking-[0.08em] text-slate-400">Active Subscriptions</p>
-                      </div>
-                      <p className="mt-2 text-4xl font-display font-bold text-slate-900 leading-none">{totalActiveSubscriptions}</p>
-                    </div>
-                    <div className="rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
-                      <div>
-                        <p className="text-[10px] font-semibold uppercase tracking-[0.08em] text-slate-400">Trial Subscriptions</p>
-                      </div>
-                      <p className="mt-2 text-4xl font-display font-bold text-slate-900 leading-none">{totalTrialSubscriptions}</p>
-                    </div>
-                    <div className="rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
-                      <div>
-                        <p className="text-[10px] font-semibold uppercase tracking-[0.08em] text-slate-400">Canceled Subscriptions</p>
-                      </div>
-                      <p className="mt-2 text-4xl font-display font-bold text-slate-900 leading-none">{totalCanceledSubscriptions}</p>
-                    </div>
-                    <div className="rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
-                      <div>
-                        <p className="text-[10px] font-semibold uppercase tracking-[0.08em] text-slate-400">New Subscriptions</p>
-                      </div>
-                      <p className="mt-2 text-4xl font-display font-bold text-slate-900 leading-none">{newSubscriptionsLast7Days}</p>
-                      <p className="mt-1 text-[11px] text-muted-foreground">Last 7 Days</p>
-                    </div>
-                    <div className="rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
-                      <div>
-                        <p className="text-[10px] font-semibold uppercase tracking-[0.08em] text-slate-400">Upcoming Renewals</p>
-                      </div>
-                      <p className="mt-2 text-4xl font-display font-bold text-primary leading-none">{upcomingRenewalsNext7Days}</p>
-                      <p className="mt-1 text-[11px] text-muted-foreground">Next 7 Days</p>
-                    </div>
+                  <div className="relative w-full sm:w-64">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input
+                      placeholder="Search by name, owner, or ID..."
+                      className="h-8 pl-9 rounded-lg bg-white border border-slate-200 text-sm placeholder:text-muted-foreground"
+                      value={activeBusinessSearch}
+                      onChange={(e) => setActiveBusinessSearch(e.target.value)}
+                    />
                   </div>
                 </div>
-                <Table>
+              </CardHeader>
+              <CardContent className="p-0 pt-2">
+                <Table className="border-t border-border [&_tr]:border-slate-200">
                   <TableHeader>
                     <TableRow>
-                      <TableHead>ID</TableHead>
-                      <TableHead>Entity Name</TableHead>
-                      <TableHead>Account Type</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Renewal Date</TableHead>
-                      <TableHead className="text-right">Amount</TableHead>
-                      <TableHead>Currency</TableHead>
-                      <TableHead>Territory</TableHead>
+                      <TableHead className="pl-6">ID</TableHead>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Owner</TableHead>
+                      <TableHead>Created</TableHead>
                       <TableHead>Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {filteredBillingSubscriptions.map((row) => (
-                      <TableRow key={row.id} className="hover:bg-orange-50/70">
-                        <TableCell className="font-mono text-xs text-muted-foreground">{row.id}</TableCell>
-                        <TableCell className="font-medium">{row.entityName}</TableCell>
-                        <TableCell>{row.planName}</TableCell>
-                        <TableCell>
-                          <Badge
-                            variant="outline"
-                            className={
-                              row.status === "Active"
-                                ? "border-emerald-200 text-emerald-700 bg-emerald-50"
-                                : row.status === "Trial"
-                                ? "border-sky-200 text-sky-700 bg-sky-50"
-                                : "border-slate-200 text-slate-700 bg-slate-50"
-                            }
-                          >
-                            {row.status}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>{row.renewalDate}</TableCell>
-                        <TableCell className="text-right">
-                          {formatCurrencyAmount(row.amount, row.currency)}
-                        </TableCell>
-                        <TableCell>{row.currency}</TableCell>
-                        <TableCell>{row.territory}</TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-1 flex-wrap">
-                            <Button size="sm" variant="ghost" className="h-7 px-2 text-xs">View</Button>
-                            <Button size="sm" variant="ghost" className="h-7 px-2 text-xs">Cancel</Button>
-                            <Button size="sm" variant="ghost" className="h-7 px-2 text-xs">Invoice History</Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-                <div className="border-t border-border px-4 py-3 flex justify-center">
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    className="h-8 text-xs text-primary hover:text-primary hover:bg-primary/10"
-                  >
-                    View all
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* <Card className="theme-panel border-none">
-              <CardHeader className="pb-2 flex flex-row items-center justify-between gap-4">
-                <div>
-                  <CardTitle className="text-base font-display">Revenue by Territory</CardTitle>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Billing distribution and territory contribution.
-                  </p>
-                </div>
-                <div className="flex items-center gap-2 flex-wrap">
-                  <FilterSelect value={billingRevenueMonthFilter} onValueChange={setBillingRevenueMonthFilter}>
-                    <FilterSelectTrigger className="h-8 w-[150px] rounded-lg border border-slate-200 bg-white text-xs font-medium text-slate-700">
-                      <FilterSelectValue placeholder="Month" />
-                    </FilterSelectTrigger>
-                    <FilterSelectContent>
-                      <FilterSelectItem value="current">Current Month</FilterSelectItem>
-                      <FilterSelectItem value="previous">Previous Month</FilterSelectItem>
-                    </FilterSelectContent>
-                  </FilterSelect>
-                  <FilterSelect value={billingRevenueStatusFilter} onValueChange={setBillingRevenueStatusFilter}>
-                    <FilterSelectTrigger className="h-8 w-[170px] rounded-lg border border-slate-200 bg-white text-xs font-medium text-slate-700">
-                      <FilterSelectValue placeholder="Territory status" />
-                    </FilterSelectTrigger>
-                    <FilterSelectContent>
-                      <FilterSelectItem value="all">All territory status</FilterSelectItem>
-                      <FilterSelectItem value="enabled">Enabled</FilterSelectItem>
-                      <FilterSelectItem value="disabled">Disabled</FilterSelectItem>
-                    </FilterSelectContent>
-                  </FilterSelect>
-                </div>
-              </CardHeader>
-              <CardContent className="p-0">
-                <div className="border-b border-border p-4">
-                  <p className="text-sm font-semibold text-slate-900">Payment Metrics</p>
-                  <div className="mt-3 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-3">
-                    <div className="rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
-                      <p className="text-[10px] font-semibold uppercase tracking-[0.08em] text-slate-400">Paid Invoices</p>
-                      <p className="mt-2 text-4xl font-display font-bold text-slate-900 leading-none">{totalPaidInvoicesThisMonth}</p>
-                      <p className="mt-1 text-[11px] text-muted-foreground">Current Month</p>
-                    </div>
-                    <div className="rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
-                      <p className="text-[10px] font-semibold uppercase tracking-[0.08em] text-slate-400">Pending Invoices</p>
-                      <p className="mt-2 text-4xl font-display font-bold text-slate-900 leading-none">{totalPendingInvoices}</p>
-                    </div>
-                    <div className="rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
-                      <p className="text-[10px] font-semibold uppercase tracking-[0.08em] text-slate-400">Overdue Invoices</p>
-                      <p className="mt-2 text-4xl font-display font-bold text-slate-900 leading-none">{totalOverdueInvoices}</p>
-                    </div>
-                    <div className="rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
-                      <p className="text-[10px] font-semibold uppercase tracking-[0.08em] text-slate-400">Total Amount Paid</p>
-                      <p className="mt-2 text-4xl font-display font-bold text-slate-900 leading-none">
-                        {formatCurrencyAmount(totalAmountPaidThisMonth, "USD")}
-                      </p>
-                      <p className="mt-1 text-[11px] text-muted-foreground">Current Month</p>
-                    </div>
-                    <div className="rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
-                      <p className="text-[10px] font-semibold uppercase tracking-[0.08em] text-slate-400">Pending Amount</p>
-                      <p className="mt-2 text-4xl font-display font-bold text-primary leading-none">
-                        {formatCurrencyAmount(pendingAmount, "USD")}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Territory</TableHead>
-                      <TableHead className="text-right">Active Subscriptions</TableHead>
-                      <TableHead className="text-right">Total Revenue</TableHead>
-                      <TableHead>Currency</TableHead>
-                      <TableHead className="text-right">% of Total Revenue</TableHead>
-                      <TableHead>Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {billingRevenueRows.map((row) => {
-                      const contribution = billingRevenueTotal
-                        ? ((row.totalRevenue / billingRevenueTotal) * 100).toFixed(1)
-                        : "0.0";
-                      return (
-                        <TableRow key={row.territory} className="hover:bg-orange-50/70">
-                          <TableCell className="font-medium">{row.territory}</TableCell>
-                          <TableCell className="text-right">{row.activeSubscriptions}</TableCell>
-                          <TableCell className="text-right">
-                            {formatCurrencyAmount(row.totalRevenue, row.currency)}
-                          </TableCell>
-                          <TableCell>{row.currency}</TableCell>
-                          <TableCell className="text-right">{contribution}%</TableCell>
-                          <TableCell>
-                            <div className="flex items-center gap-1">
-                              <Button size="sm" variant="ghost" className="h-7 px-2 text-xs">View Detail</Button>
-                              <Button size="sm" variant="ghost" className="h-7 px-2 text-xs">Export CSV</Button>
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card> */}
-
-            <Card className="theme-panel border-none">
-              <CardHeader className="pb-2 flex flex-row items-center justify-between gap-4">
-                <div>
-                  <CardTitle className="text-base font-display">Recent Invoices</CardTitle>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Invoice snapshot for payment operations and follow-up.
-                  </p>
-                </div>
-                <div className="flex items-center gap-2 flex-wrap">
-                  <FilterSelect value={billingInvoiceStatusFilter} onValueChange={setBillingInvoiceStatusFilter}>
-                    <FilterSelectTrigger className="h-8 w-[150px] rounded-lg border border-slate-200 bg-white text-xs font-medium text-slate-700">
-                      <FilterSelectValue placeholder="Status" />
-                    </FilterSelectTrigger>
-                    <FilterSelectContent>
-                      <FilterSelectItem value="all">All status</FilterSelectItem>
-                      <FilterSelectItem value="paid">Paid</FilterSelectItem>
-                      <FilterSelectItem value="pending">Pending</FilterSelectItem>
-                      <FilterSelectItem value="overdue">Overdue</FilterSelectItem>
-                    </FilterSelectContent>
-                  </FilterSelect>
-                  <FilterSelect value={billingInvoiceDateRangeFilter} onValueChange={setBillingInvoiceDateRangeFilter}>
-                    <FilterSelectTrigger className="h-8 w-[170px] rounded-lg border border-slate-200 bg-white text-xs font-medium text-slate-700">
-                      <FilterSelectValue placeholder="Issued date range" />
-                    </FilterSelectTrigger>
-                    <FilterSelectContent>
-                      <FilterSelectItem value="all">All issue dates</FilterSelectItem>
-                      <FilterSelectItem value="last30">Last 30 days</FilterSelectItem>
-                      <FilterSelectItem value="last90">Last 90 days</FilterSelectItem>
-                    </FilterSelectContent>
-                  </FilterSelect>
-                  <FilterSelect value={billingInvoiceTerritoryFilter} onValueChange={setBillingInvoiceTerritoryFilter}>
-                    <FilterSelectTrigger className="h-8 w-[150px] rounded-lg border border-slate-200 bg-white text-xs font-medium text-slate-700">
-                      <FilterSelectValue placeholder="Territory" />
-                    </FilterSelectTrigger>
-                    <FilterSelectContent>
-                      <FilterSelectItem value="all">All territories</FilterSelectItem>
-                      <FilterSelectItem value="us-east">US-East</FilterSelectItem>
-                      <FilterSelectItem value="us-west">US-West</FilterSelectItem>
-                      <FilterSelectItem value="eu-west">EU-West</FilterSelectItem>
-                      <FilterSelectItem value="apac">APAC</FilterSelectItem>
-                    </FilterSelectContent>
-                  </FilterSelect>
-                </div>
-              </CardHeader>
-              <CardContent className="p-0">
-                <div className="border-b border-border pb-4 px-4">
-                  <div className="mt-3 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-3">
-                    <div className="rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
-                      <p className="text-[10px] font-semibold uppercase tracking-[0.08em] text-slate-400">Paid Invoices</p>
-                      <p className="mt-2 text-4xl font-display font-bold text-slate-900 leading-none">{totalPaidInvoicesThisMonth}</p>
-                      <p className="mt-1 text-[11px] text-muted-foreground">Current Month</p>
-                    </div>
-                    <div className="rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
-                      <p className="text-[10px] font-semibold uppercase tracking-[0.08em] text-slate-400">Pending Invoices</p>
-                      <p className="mt-2 text-4xl font-display font-bold text-slate-900 leading-none">{totalPendingInvoices}</p>
-                    </div>
-                    <div className="rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
-                      <p className="text-[10px] font-semibold uppercase tracking-[0.08em] text-slate-400">Overdue Invoices</p>
-                      <p className="mt-2 text-4xl font-display font-bold text-slate-900 leading-none">{totalOverdueInvoices}</p>
-                    </div>
-                    <div className="rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
-                      <p className="text-[10px] font-semibold uppercase tracking-[0.08em] text-slate-400">Total Amount Paid</p>
-                      <p className="mt-2 text-4xl font-display font-bold text-slate-900 leading-none">
-                        {formatCurrencyAmount(totalAmountPaidThisMonth, "USD")}
-                      </p>
-                      <p className="mt-1 text-[11px] text-muted-foreground">Current Month</p>
-                    </div>
-                    <div className="rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
-                      <p className="text-[10px] font-semibold uppercase tracking-[0.08em] text-slate-400">Pending Amount</p>
-                      <p className="mt-2 text-4xl font-display font-bold text-primary leading-none">
-                        {formatCurrencyAmount(pendingAmount, "USD")}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Invoice ID</TableHead>
-                      <TableHead>Entity</TableHead>
-                      <TableHead className="text-right">Amount</TableHead>
-                      <TableHead>Currency</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Issued Date</TableHead>
-                      <TableHead>Due Date</TableHead>
-                      <TableHead>Territory</TableHead>
-                      <TableHead>Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredBillingInvoices.map((row) => (
-                      <TableRow key={row.invoiceId} className="hover:bg-orange-50/70">
-                        <TableCell className="font-mono text-xs text-muted-foreground">{row.invoiceId}</TableCell>
-                        <TableCell className="font-medium">{row.entity}</TableCell>
-                        <TableCell className="text-right">
-                          {formatCurrencyAmount(row.amount, row.currency)}
-                        </TableCell>
-                        <TableCell>{row.currency}</TableCell>
-                        <TableCell>
-                          <Badge
-                            variant="outline"
-                            className={
-                              row.status === "Paid"
-                                ? "border-emerald-200 text-emerald-700 bg-emerald-50"
-                                : row.status === "Pending"
-                                ? "border-sky-200 text-sky-700 bg-sky-50"
-                                : "border-rose-200 text-rose-700 bg-rose-50"
-                            }
-                          >
-                            {row.status}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>{row.issuedDate}</TableCell>
-                        <TableCell>{row.dueDate}</TableCell>
-                        <TableCell>{row.territory}</TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-1 flex-wrap">
-                            <Button size="sm" variant="ghost" className="h-7 px-2 text-xs">View Invoice</Button>
-                            <Button size="sm" variant="ghost" className="h-7 px-2 text-xs">Resend</Button>
-                            <Button size="sm" variant="ghost" className="h-7 px-2 text-xs">Mark Paid</Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
-          </section>
-
-            {/* Core dashboard tables (UI only, static data) */}
-            <section className="space-y-10">
-            {/* Recently created entities & subscriptions */}
-            {/* <div className="space-y-6"> */}
-              {/* Table 1 — Recently created entities */}
-              {/* <Card className="theme-panel border-none">
-                <CardHeader className="pb-2 flex flex-row items-center justify-between gap-4">
-                  <div>
-                    <CardTitle className="text-base font-display">
-                      Recently Created Entities
-                    </CardTitle>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Simple overview of new entities coming onto the platform.
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <FilterSelect defaultValue="all">
-                      <FilterSelectTrigger className="h-8 w-[170px] min-w-[170px] rounded-lg border border-slate-200 bg-white text-xs font-medium text-slate-700 [&>span]:line-clamp-none">
-                        <FilterSelectValue placeholder="Status" />
-                      </FilterSelectTrigger>
-                      <FilterSelectContent>
-                        <FilterSelectItem value="all">All status</FilterSelectItem>
-                        <FilterSelectItem value="active">Active</FilterSelectItem>
-                        <FilterSelectItem value="trial">Trial</FilterSelectItem>
-                        <FilterSelectItem value="suspended">Suspended</FilterSelectItem>
-                      </FilterSelectContent>
-                    </FilterSelect>
-                    <FilterSelect defaultValue="all">
-                      <FilterSelectTrigger className="h-8 w-[170px] min-w-[170px] rounded-lg border border-slate-200 bg-white text-xs font-medium text-slate-700 [&>span]:line-clamp-none">
-                        <FilterSelectValue placeholder="Territory" />
-                      </FilterSelectTrigger>
-                      <FilterSelectContent>
-                        <FilterSelectItem value="all">All territories</FilterSelectItem>
-                        <FilterSelectItem value="us">US</FilterSelectItem>
-                        <FilterSelectItem value="eu">EU</FilterSelectItem>
-                        <FilterSelectItem value="apac">APAC</FilterSelectItem>
-                      </FilterSelectContent>
-                    </FilterSelect>
-                  </div>
-                </CardHeader>
-                <CardContent className="p-0">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Entity ID</TableHead>
-                        <TableHead>Name</TableHead>
-                        <TableHead>Type</TableHead>
-                        <TableHead>Territory</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>Created Date</TableHead>
-                        <TableHead>Owner</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {entitiesTable.map((row) => (
-                        <TableRow key={row.id} className="hover:bg-orange-50/70">
-                          <TableCell className="font-mono text-xs text-muted-foreground">
-                            {row.id}
-                          </TableCell>
-                          <TableCell className="font-medium">{row.name}</TableCell>
-                          <TableCell className="text-sm text-slate-700">{row.type}</TableCell>
-                          <TableCell className="text-sm text-slate-700">{row.territory}</TableCell>
-                          <TableCell>
-                            <Badge
-                              variant="outline"
-                              className={
-                                row.status === "Active"
-                                  ? "border-emerald-200 text-emerald-700 bg-emerald-50"
-                                  : "border-amber-200 text-amber-700 bg-amber-50"
-                              }
-                            >
-                              {row.status}
-                            </Badge>
-                          </TableCell>
-                          <TableCell className="text-sm text-slate-700">{row.created}</TableCell>
-                          <TableCell className="text-sm text-slate-700">{row.owner}</TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </CardContent>
-              </Card> */}
-
-              {/* Table 2 — Subscription overview */}
-              {/* <Card className="theme-panel border-none">
-                <CardHeader className="pb-2 flex flex-row items-center justify-between gap-4">
-                  <div>
-                    <CardTitle className="text-base font-display">
-                      Subscription Overview (Recent Activity)
-                    </CardTitle>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      High-level billing snapshot. No live billing actions are wired
-                      in this demo.
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <FilterSelect defaultValue="all">
-                      <FilterSelectTrigger className="h-8 w-[170px] min-w-[170px] rounded-lg border border-slate-200 bg-white text-xs font-medium text-slate-700 [&>span]:line-clamp-none">
-                        <FilterSelectValue placeholder="Status" />
-                      </FilterSelectTrigger>
-                      <FilterSelectContent>
-                        <FilterSelectItem value="all">All status</FilterSelectItem>
-                        <FilterSelectItem value="active">Active</FilterSelectItem>
-                        <FilterSelectItem value="trial">Trial</FilterSelectItem>
-                        <FilterSelectItem value="canceled">Canceled</FilterSelectItem>
-                      </FilterSelectContent>
-                    </FilterSelect>
-                    <FilterSelect defaultValue="all">
-                      <FilterSelectTrigger className="h-8 w-[170px] min-w-[170px] rounded-lg border border-slate-200 bg-white text-xs font-medium text-slate-700 [&>span]:line-clamp-none">
-                        <FilterSelectValue placeholder="Plan" />
-                      </FilterSelectTrigger>
-                      <FilterSelectContent>
-                        <FilterSelectItem value="all">All plans</FilterSelectItem>
-                        <FilterSelectItem value="trial">Trial</FilterSelectItem>
-                        <FilterSelectItem value="launch">Launch</FilterSelectItem>
-                        <FilterSelectItem value="scale">Scale</FilterSelectItem>
-                      </FilterSelectContent>
-                    </FilterSelect>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="h-8 text-xs text-primary hover:text-primary hover:bg-primary/10"
-                    >
-                      View all
-                    </Button>
-                  </div>
-                </CardHeader>
-                <CardContent className="p-0">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Subscription ID</TableHead>
-                        <TableHead>Entity</TableHead>
-                        <TableHead>Plan</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>Renewal Date</TableHead>
-                        <TableHead>Currency</TableHead>
-                        <TableHead className="text-right">Amount</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {subscriptionsTable.map((row) => (
-                        <TableRow key={row.id} className="hover:bg-orange-50/70">
-                          <TableCell className="font-mono text-xs text-muted-foreground">
-                            {row.id}
-                          </TableCell>
-                          <TableCell className="font-medium">{row.entity}</TableCell>
-                          <TableCell className="text-sm text-slate-700">{row.plan}</TableCell>
-                          <TableCell>
-                            <Badge
-                              variant="outline"
-                              className={
-                                row.status === "Active"
-                                  ? "border-emerald-200 text-emerald-700 bg-emerald-50"
-                                  : row.status === "Trial"
-                                  ? "border-sky-200 text-sky-700 bg-sky-50"
-                                  : "border-slate-200 text-slate-700 bg-slate-50"
-                              }
-                            >
-                              {row.status}
-                            </Badge>
-                          </TableCell>
-                          <TableCell className="text-sm text-slate-700">
-                            {row.renewalDate}
-                          </TableCell>
-                          <TableCell className="text-sm text-slate-700">
-                            {row.currency}
-                          </TableCell>
-                          <TableCell className="text-right text-sm text-slate-900">
-                            {row.amount}
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </CardContent>
-              </Card> */}
-            {/* </div> */}
-
-            {/* Staff & territories */}
-            <div className="space-y-6">
-            
-
-              {/* Table 4 — Territories status */}
-              <Card className="theme-panel border-none">
-                <CardHeader className="pb-2 flex flex-row items-center justify-between gap-4">
-                  <div>
-                    <CardTitle className="text-base font-display">
-                      Territories Status
-                    </CardTitle>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Territory health and subscription coverage by region.
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <FilterSelect value={territoryStatusFilter} onValueChange={setTerritoryStatusFilter}>
-                      <FilterSelectTrigger className="h-8 w-[170px] min-w-[170px] rounded-lg border border-slate-200 bg-white text-xs font-medium text-slate-700 [&>span]:line-clamp-none">
-                        <FilterSelectValue placeholder="Status" />
-                      </FilterSelectTrigger>
-                      <FilterSelectContent>
-                        <FilterSelectItem value="all">All status</FilterSelectItem>
-                        <FilterSelectItem value="enabled">Enabled</FilterSelectItem>
-                        <FilterSelectItem value="disabled">Disabled</FilterSelectItem>
-                      </FilterSelectContent>
-                    </FilterSelect>
-                    <FilterSelect value={territoryCurrencyFilter} onValueChange={setTerritoryCurrencyFilter}>
-                      <FilterSelectTrigger className="h-8 w-[170px] min-w-[170px] rounded-lg border border-slate-200 bg-white text-xs font-medium text-slate-700 [&>span]:line-clamp-none">
-                        <FilterSelectValue placeholder="Currency" />
-                      </FilterSelectTrigger>
-                      <FilterSelectContent>
-                        <FilterSelectItem value="all">All currencies</FilterSelectItem>
-                        <FilterSelectItem value="usd">USD</FilterSelectItem>
-                        <FilterSelectItem value="eur">EUR</FilterSelectItem>
-                      </FilterSelectContent>
-                    </FilterSelect>
-                    <FilterSelect value={billingRevenueMonthFilter} onValueChange={setBillingRevenueMonthFilter}>
-                      <FilterSelectTrigger className="h-8 w-[170px] min-w-[170px] rounded-lg border border-slate-200 bg-white text-xs font-medium text-slate-700 [&>span]:line-clamp-none">
-                        <FilterSelectValue placeholder="Revenue month" />
-                      </FilterSelectTrigger>
-                      <FilterSelectContent>
-                        <FilterSelectItem value="current">Current Month</FilterSelectItem>
-                        <FilterSelectItem value="previous">Previous Month</FilterSelectItem>
-                      </FilterSelectContent>
-                    </FilterSelect>
-                   
-                  </div>
-                </CardHeader>
-                <CardContent className="pt-2 space-y-4">
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <div className="rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
-                      <div>
-                        <p className="text-[10px] font-semibold uppercase tracking-[0.08em] text-slate-400">Enabled Territories</p>
-                      </div>
-                      <p className="mt-2 text-4xl font-display font-bold text-slate-900 leading-none">{enabledTerritories}</p>
-                    </div>
-                    <div className="rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
-                      <div>
-                        <p className="text-[10px] font-semibold uppercase tracking-[0.08em] text-slate-400">Entities in Regions</p>
-                      </div>
-                      <p className="mt-2 text-4xl font-display font-bold text-slate-900 leading-none">{totalTerritoryEntities}</p>
-                    </div>
-                    <div className="rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
-                      <div>
-                        <p className="text-[10px] font-semibold uppercase tracking-[0.08em] text-slate-400">Total Revenue</p>
-                      </div>
-                      <p className="mt-2 text-4xl font-display font-bold text-slate-900 leading-none">
-                        {formatCurrencyAmount(combinedTerritoryRevenueTotal, "USD")}
-                      </p>
-                      <p className="mt-2 text-[11px] text-muted-foreground">
-                        {billingRevenueMonthFilter === "previous" ? "Previous month" : "Current month"}
-                      </p>
-                    </div>
-                  </div>
-
-                  <Card className="theme-surface border-none overflow-hidden">
-                    <CardContent className="p-0">
-                      <Table>
-                        <TableHeader>
-                          <TableRow>
-                            <TableHead>Territory</TableHead>
-                            <TableHead>Status</TableHead>
-                            <TableHead>Currency</TableHead>
-                            <TableHead className="text-right">Entities</TableHead>
-                            <TableHead className="text-right">Active Subs</TableHead>
-                            <TableHead className="text-right">Total Revenue</TableHead>
-                            <TableHead className="text-right">% of Total Revenue</TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {combinedTerritoriesWithRevenue.map((row) => {
-                            const contribution = combinedTerritoryRevenueTotal
-                              ? ((row.totalRevenue / combinedTerritoryRevenueTotal) * 100).toFixed(1)
-                              : "0.0";
-                            return (
-                              <TableRow key={row.code} className="hover:bg-orange-50/70">
-                                <TableCell>
-                                  <p className="font-medium text-slate-900">{row.name}</p>
-                                  <p className="text-xs text-muted-foreground font-mono">{row.code}</p>
-                                </TableCell>
-                                <TableCell>
-                                  <Badge
-                                    variant="outline"
-                                    className={
-                                      row.status === "Enabled"
-                                        ? "border-orange-200 text-orange-700 bg-orange-50"
-                                        : "border-slate-200 text-slate-700 bg-slate-50"
-                                    }
-                                  >
-                                    {row.status}
-                                  </Badge>
-                                </TableCell>
-                                <TableCell className="text-sm text-slate-700">{row.currency}</TableCell>
-                                <TableCell className="text-right font-medium">{row.entities}</TableCell>
-                                <TableCell className="text-right font-medium">{row.activeSubscriptions}</TableCell>
-                                <TableCell className="text-right font-medium">
-                                  {formatCurrencyAmount(row.totalRevenue, row.revenueCurrency)}
-                                </TableCell>
-                                <TableCell className="text-right font-medium">{contribution}%</TableCell>
-                              </TableRow>
-                            );
-                          })}
-                        </TableBody>
-                      </Table>
-                      <div className="border-t border-border px-4 py-3 flex justify-center">
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          className="h-8 text-xs text-primary hover:text-primary hover:bg-primary/10"
-                        >
-                          View all
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </CardContent>
-              </Card>
-            </div>
-
-              {/* Table 3 — Recently added staff */}
-              <Card className="theme-panel border-none">
-                <CardHeader className="pb-2 flex flex-row items-center justify-between gap-4">
-                  <div>
-                    <CardTitle className="text-base font-display">
-                      Recently Added Platform Staff
-                    </CardTitle>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Platform staff accounts that manage teams and entities.
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <FilterSelect defaultValue="all">
-                      <FilterSelectTrigger className="h-8 w-[170px] min-w-[170px] rounded-lg border border-slate-200 bg-white text-xs font-medium text-slate-700 [&>span]:line-clamp-none">
-                        <FilterSelectValue placeholder="Role" />
-                      </FilterSelectTrigger>
-                      <FilterSelectContent>
-                        <FilterSelectItem value="all">All roles</FilterSelectItem>
-                        <FilterSelectItem value="superadmin">SuperAdmin</FilterSelectItem>
-                        <FilterSelectItem value="support">Support</FilterSelectItem>
-                        <FilterSelectItem value="ops">Ops</FilterSelectItem>
-                      </FilterSelectContent>
-                    </FilterSelect>
-                    <FilterSelect defaultValue="all">
-                      <FilterSelectTrigger className="h-8 w-[170px] min-w-[170px] rounded-lg border border-slate-200 bg-white text-xs font-medium text-slate-700 [&>span]:line-clamp-none">
-                        <FilterSelectValue placeholder="Status" />
-                      </FilterSelectTrigger>
-                      <FilterSelectContent>
-                        <FilterSelectItem value="all">All status</FilterSelectItem>
-                        <FilterSelectItem value="active">Active</FilterSelectItem>
-                        <FilterSelectItem value="inactive">Inactive</FilterSelectItem>
-                      </FilterSelectContent>
-                    </FilterSelect>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="h-8 text-xs text-primary hover:text-primary hover:bg-primary/10"
-                    >
-                      View all
-                    </Button>
-                  </div>
-                </CardHeader>
-                <CardContent className="pt-2">
-                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-                    {staffTable.map((row) => (
-                      <div
-                        key={row.id}
-                        className="theme-surface rounded-xl p-4 transition-all hover:-translate-y-0.5 hover:shadow-md"
+                    {filteredActiveBusinesses.map((entity) => (
+                      <TableRow
+                        key={entity.id}
+                        className="hover:bg-orange-50/70 transition-colors"
                       >
-                        <div className="flex items-start justify-between gap-3">
-                          <div>
-                            <p className="text-sm font-semibold text-slate-900">{row.name}</p>
-                            <p className="text-xs text-muted-foreground font-mono mt-0.5">{row.id}</p>
+                        <TableCell className="font-mono text-xs text-muted-foreground pl-6">
+                          {entity.id}
+                        </TableCell>
+                        <TableCell className="font-medium">
+                          {entity.name}
+                        </TableCell>
+                        <TableCell className="text-sm text-slate-700">
+                          <div className="flex flex-col">
+                            <span>{entity.owner}</span>
+                            <a
+                              href={`mailto:${entity.ownerEmail}`}
+                              className="text-xs text-muted-foreground underline underline-offset-2 decoration-slate-300"
+                            >
+                              {entity.ownerEmail}
+                            </a>
                           </div>
-                          <Badge
-                            variant="outline"
-                            className="border-emerald-200 text-emerald-700 bg-emerald-50"
+                        </TableCell>
+                        <TableCell className="text-sm text-slate-700">
+                          {entity.created}
+                        </TableCell>
+                        <TableCell>
+                          <Button
+                            asChild
+                            size="sm"
+                            variant="ghost"
+                            className="h-7 px-2 text-xs text-primary hover:text-primary hover:bg-primary/5"
                           >
-                            {row.status}
-                          </Badge>
-                        </div>
-
-                        <div className="mt-3 space-y-1.5 text-xs text-slate-700">
-                          <p>
-                            <span className="text-muted-foreground">Role:</span>{" "}
-                            <span className="font-medium">{row.role}</span>
-                          </p>
-                          <p>
-                            <span className="text-muted-foreground">Created:</span>{" "}
-                            <span>{row.created}</span>
-                          </p>
-                          <p>
-                            <span className="text-muted-foreground">Last active:</span>{" "}
-                            <span>{row.lastActive}</span>
-                          </p>
-                        </div>
-                      </div>
+                            <Link href={`/entities/${entity.id}`}>
+                              View account
+                            </Link>
+                          </Button>
+                        </TableCell>
+                      </TableRow>
                     ))}
-                  </div>
-                </CardContent>
-              </Card>
+                    {filteredActiveBusinesses.length === 0 && (
+                      <TableRow>
+                        <TableCell
+                          colSpan={5}
+                          className="py-8 text-center text-sm text-muted-foreground"
+                        >
+                          No active businesses match the current filters.
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          </section>
 
-            {/* Table 5 — Feature flags summary */}
+              {/* Communities / organizations table */}
+              <section className="space-y-3">
             <Card className="theme-panel border-none">
               <CardHeader className="pb-2 flex flex-row items-center justify-between gap-4">
                 <div>
                   <CardTitle className="text-base font-display">
-                    Feature Flags Summary
+                    Communities / organizations
                   </CardTitle>
                   <p className="text-xs text-muted-foreground mt-1">
-                    Snapshot of feature flags across modules. No toggles are live in
-                    this view.
+                    List of all community and organization entities across territories.
                   </p>
                 </div>
                 <div className="flex items-center gap-2 flex-wrap">
-                  <FilterSelect defaultValue="all">
-                    <FilterSelectTrigger className="h-8 w-[170px] min-w-[170px] rounded-lg border border-slate-200 bg-white text-xs font-medium text-slate-700 [&>span]:line-clamp-none">
-                      <FilterSelectValue placeholder="Module" />
-                    </FilterSelectTrigger>
-                    <FilterSelectContent>
-                      <FilterSelectItem value="all">All modules</FilterSelectItem>
-                      <FilterSelectItem value="billing">Billing</FilterSelectItem>
-                      <FilterSelectItem value="entities">Entities</FilterSelectItem>
-                      <FilterSelectItem value="staff">Staff</FilterSelectItem>
-                    </FilterSelectContent>
-                  </FilterSelect>
-                    <FilterSelect defaultValue="all">
-                      <FilterSelectTrigger className="h-8 w-[170px] min-w-[170px] rounded-lg border border-slate-200 bg-white text-xs font-medium text-slate-700 [&>span]:line-clamp-none">
-                      <FilterSelectValue placeholder="State" />
-                    </FilterSelectTrigger>
-                    <FilterSelectContent>
-                      <FilterSelectItem value="all">All states</FilterSelectItem>
-                      <FilterSelectItem value="on">On</FilterSelectItem>
-                      <FilterSelectItem value="off">Off</FilterSelectItem>
-                      <FilterSelectItem value="beta">Beta</FilterSelectItem>
-                    </FilterSelectContent>
-                  </FilterSelect>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    className="h-8 text-xs text-primary hover:text-primary hover:bg-primary/10"
-                  >
-                    View all
-                  </Button>
+                  <div className="relative w-full sm:w-64">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input
+                      placeholder="Search by name, owner, or ID..."
+                      className="h-8 pl-9 rounded-lg bg-white border border-slate-200 text-sm placeholder:text-muted-foreground"
+                      value={communitySearch}
+                      onChange={(e) => setCommunitySearch(e.target.value)}
+                    />
+                  </div>
                 </div>
               </CardHeader>
-              <CardContent className="pt-2 space-y-3">
-                {featureFlagsTable.map((row) => (
-                  <div
-                    key={row.key}
-                    className="theme-surface rounded-xl p-4 transition-all hover:-translate-y-0.5 hover:shadow-md"
-                  >
-                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-                      <div>
-                        <p className="font-mono text-xs text-muted-foreground">{row.key}</p>
-                        <p className="text-sm font-medium text-slate-900 mt-1">{row.module}</p>
-                      </div>
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <Badge
-                          variant="outline"
-                          className={
-                            row.defaultState === "On"
-                              ? "border-emerald-200 text-emerald-700 bg-emerald-50"
-                              : row.defaultState === "Beta"
-                              ? "border-sky-200 text-sky-700 bg-sky-50"
-                              : "border-slate-200 text-slate-700 bg-slate-50"
-                          }
+              <CardContent className="p-0 pt-2">
+                <Table className="border-t border-border [&_tr]:border-slate-200">
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="pl-6">ID</TableHead>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Owner</TableHead>
+                      <TableHead>Created</TableHead>
+                      <TableHead>Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredCommunities.map((entity) => (
+                      <TableRow
+                        key={entity.id}
+                        className="hover:bg-orange-50/70 transition-colors"
+                      >
+                        <TableCell className="font-mono text-xs text-muted-foreground pl-6">
+                          {entity.id}
+                        </TableCell>
+                        <TableCell className="font-medium">
+                          {entity.name}
+                        </TableCell>
+                        <TableCell className="text-sm text-slate-700">
+                          <div className="flex flex-col">
+                            <span>{entity.owner}</span>
+                            <a
+                              href={`mailto:${entity.ownerEmail}`}
+                              className="text-xs text-muted-foreground underline underline-offset-2 decoration-slate-300"
+                            >
+                              {entity.ownerEmail}
+                            </a>
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-sm text-slate-700">
+                          {entity.created}
+                        </TableCell>
+                        <TableCell>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="h-7 px-2 text-xs text-primary hover:text-primary hover:bg-primary/5"
+                          >
+                            View account
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                    {filteredCommunities.length === 0 && (
+                      <TableRow>
+                        <TableCell
+                          colSpan={5}
+                          className="py-8 text-center text-sm text-muted-foreground"
                         >
-                          {row.defaultState}
-                        </Badge>
-                        <Badge variant="outline" className="border-orange-200 bg-orange-50/70 text-orange-700">
-                          {row.environment}
-                        </Badge>
-                      </div>
-                    </div>
-
-                    <div className="mt-3 text-xs text-slate-700 flex flex-col sm:flex-row sm:items-center sm:gap-4">
-                      <p>
-                        <span className="text-muted-foreground">Last updated:</span>{" "}
-                        {row.lastUpdated}
-                      </p>
-                      <p>
-                        <span className="text-muted-foreground">By:</span>{" "}
-                        {row.updatedBy}
-                      </p>
-                    </div>
-                  </div>
-                ))}
+                          No communities or organizations match the current filters.
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
               </CardContent>
             </Card>
-
           </section>
 
+          {/* Event organizers table */}
+          <section className="space-y-3">
+            <Card className="theme-panel border-none">
+              <CardHeader className="pb-2 flex flex-row items-center justify-between gap-4">
+                <div>
+                  <CardTitle className="text-base font-display">
+                    Event organizers
+                  </CardTitle>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    List of all event organizer entities across territories.
+                  </p>
+                </div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <div className="relative w-full sm:w-64">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input
+                      placeholder="Search by name, owner, or ID..."
+                      className="h-8 pl-9 rounded-lg bg-white border border-slate-200 text-sm placeholder:text-muted-foreground"
+                      value={eventOrganizerSearch}
+                      onChange={(e) => setEventOrganizerSearch(e.target.value)}
+                    />
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="p-0 pt-2">
+                <Table className="border-t border-border [&_tr]:border-slate-200">
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="pl-6">ID</TableHead>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Owner</TableHead>
+                      <TableHead>Created</TableHead>
+                      <TableHead>Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredEventOrganizers.map((entity) => (
+                      <TableRow
+                        key={entity.id}
+                        className="hover:bg-orange-50/70 transition-colors"
+                      >
+                        <TableCell className="font-mono text-xs text-muted-foreground pl-6">
+                          {entity.id}
+                        </TableCell>
+                        <TableCell className="font-medium">
+                          {entity.name}
+                        </TableCell>
+                        <TableCell className="text-sm text-slate-700">
+                          <div className="flex flex-col">
+                            <span>{entity.owner}</span>
+                            <a
+                              href={`mailto:${entity.ownerEmail}`}
+                              className="text-xs text-muted-foreground underline underline-offset-2 decoration-slate-300"
+                            >
+                              {entity.ownerEmail}
+                            </a>
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-sm text-slate-700">
+                          {entity.created}
+                        </TableCell>
+                        <TableCell>
+                          <Button
+                            asChild
+                            size="sm"
+                            variant="ghost"
+                            className="h-7 px-2 text-xs text-primary hover:text-primary hover:bg-primary/5"
+                          >
+                            <Link href={`/entities/${entity.id}`}>
+                              View account
+                            </Link>
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                    {filteredEventOrganizers.length === 0 && (
+                      <TableRow>
+                        <TableCell
+                          colSpan={5}
+                          className="py-8 text-center text-sm text-muted-foreground"
+                        >
+                          No event organizers match the current filters.
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          </section>
+
+      
+
+          {/* Agencies table */}
+          <section className="space-y-3">
+            <Card className="theme-panel border-none">
+              <CardHeader className="pb-2 flex flex-row items-center justify-between gap-4">
+                <div>
+                  <CardTitle className="text-base font-display">
+                    Agencies
+                  </CardTitle>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    List of all agency entities across territories.
+                  </p>
+                </div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <div className="relative w-full sm:w-64">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input
+                      placeholder="Search by name, owner, or ID..."
+                      className="h-8 pl-9 rounded-lg bg-white border border-slate-200 text-sm placeholder:text-muted-foreground"
+                      value={agencySearch}
+                      onChange={(e) => setAgencySearch(e.target.value)}
+                    />
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="p-0 pt-2">
+                <Table className="border-t border-border [&_tr]:border-slate-200">
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="pl-6">ID</TableHead>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Owner</TableHead>
+                      <TableHead>Created</TableHead>
+                      <TableHead>Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredAgencies.map((entity) => (
+                      <TableRow
+                        key={entity.id}
+                        className="hover:bg-orange-50/70 transition-colors"
+                      >
+                        <TableCell className="font-mono text-xs text-muted-foreground pl-6">
+                          {entity.id}
+                        </TableCell>
+                        <TableCell className="font-medium">
+                          {entity.name}
+                        </TableCell>
+                        <TableCell className="text-sm text-slate-700">
+                          <div className="flex flex-col">
+                            <span>{entity.owner}</span>
+                            <a
+                              href={`mailto:${entity.ownerEmail}`}
+                              className="text-xs text-muted-foreground underline underline-offset-2 decoration-slate-300"
+                            >
+                              {entity.ownerEmail}
+                            </a>
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-sm text-slate-700">
+                          {entity.created}
+                        </TableCell>
+                        <TableCell>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="h-7 px-2 text-xs text-primary hover:text-primary hover:bg-primary/5"
+                          >
+                            View account
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                    {filteredAgencies.length === 0 && (
+                      <TableRow>
+                        <TableCell
+                          colSpan={5}
+                          className="py-8 text-center text-sm text-muted-foreground"
+                        >
+                          No agencies match the current filters.
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          </section>
         </div>
       </main>
     </div>
