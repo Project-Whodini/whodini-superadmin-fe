@@ -6,7 +6,10 @@ import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
 const __dirname = new URL(".", import.meta.url).pathname;
 
 export default defineConfig({
-  base: process.env.VITE_BASE ?? "/",
+  base:
+    process.env.NODE_ENV === "production"
+      ? process.env.VITE_BASE ?? "/whodini-superadmin-fe/"
+      : "/",
   plugins: [
     react(),
     runtimeErrorOverlay(),
