@@ -703,34 +703,34 @@ export default function Dashboard() {
             ) : todayStats ? (
               <>
                 <StatCard 
-                  title="Registered Users" 
+                  title="Users" 
                   value={todayStats.totalUsers.toLocaleString()}
                   subValue={`${todayStats.activeUsersDaily} active today`}
                   trend={calculateTrend(todayStats.totalUsers, yesterdayStats?.totalUsers || 0)}
                   icon={<Users className="w-4 h-4" />}
                 />
                 <StatCard 
-                  title="Registered Businesses / Brands" 
+                  title="Businesses / Brands" 
                   value={registeredBusinessBrands.toLocaleString()}
-                  subValue="Accounts on Business / Brand plans"
+                  subValue="Registered business & brand accounts"
                   icon={<Building2 className="w-4 h-4" />}
                 />
                 <StatCard 
-                  title="Registered Communities / Organizations" 
+                  title="Communities / Organizations" 
                   value={registeredCommunitiesOrganizations.toLocaleString()}
-                  subValue="Accounts on Community / Organization plans"
+                  subValue="Registered community & organization accounts"
                   icon={<Users className="w-4 h-4" />}
                 />
                 <StatCard 
-                  title="Registered Event Organizers" 
+                  title="Event Organizers" 
                   value={registeredEventOrganizers.toLocaleString()}
-                  subValue="Accounts on Event Organizer plans"
+                  subValue="Registered event organizer accounts"
                   icon={<CalendarDays className="w-4 h-4" />}
                 />
                 <StatCard 
-                  title="Registered Agencies" 
+                  title="Agencies" 
                   value={registeredAgencies.toLocaleString()}
-                  subValue="Accounts on Agency plans"
+                  subValue="Registered agency accounts"
                   icon={<Building2 className="w-4 h-4" />}
                 />
               </>
@@ -743,10 +743,10 @@ export default function Dashboard() {
               <CardHeader className="pb-2 flex flex-row items-center justify-between gap-4">
                 <div>
                   <CardTitle className="text-base font-display">
-                    Active businesses
+                    Active Businesses
                   </CardTitle>
                   <p className="text-xs text-muted-foreground mt-1">
-                    List of all approved business entities across territories.
+                    List of all approved business entities.
                   </p>
                 </div>
                 <div className="flex items-center gap-2 flex-wrap">
@@ -834,10 +834,10 @@ export default function Dashboard() {
               <CardHeader className="pb-2 flex flex-row items-center justify-between gap-4">
                 <div>
                   <CardTitle className="text-base font-display">
-                    Communities / organizations
+                    Communities / Organizations
                   </CardTitle>
                   <p className="text-xs text-muted-foreground mt-1">
-                    List of all community and organization entities across territories.
+                    List of all community and organization entities.
                   </p>
                 </div>
                 <div className="flex items-center gap-2 flex-wrap">
@@ -922,10 +922,10 @@ export default function Dashboard() {
               <CardHeader className="pb-2 flex flex-row items-center justify-between gap-4">
                 <div>
                   <CardTitle className="text-base font-display">
-                    Event organizers
+                    Event Organizers
                   </CardTitle>
                   <p className="text-xs text-muted-foreground mt-1">
-                    List of all event organizer entities across territories.
+                    List of all event organizer entities.
                   </p>
                 </div>
                 <div className="flex items-center gap-2 flex-wrap">
@@ -1018,7 +1018,7 @@ export default function Dashboard() {
                     Agencies
                   </CardTitle>
                   <p className="text-xs text-muted-foreground mt-1">
-                    List of all agency entities across territories.
+                    List of all agency entities.
                   </p>
                 </div>
                 <div className="flex items-center gap-2 flex-wrap">
