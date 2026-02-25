@@ -53,10 +53,19 @@ export default function Teams() {
 
   const [staff, setStaff] = useState<StaffRow[]>(staffTable);
   const [isCreating, setIsCreating] = useState(false);
-  const [newStaff, setNewStaff] = useState<Pick<StaffRow, "name" | "role" | "status">>({
+  const [newStaff, setNewStaff] = useState<
+    Pick<StaffRow, "name" | "role" | "status"> & {
+      email: string;
+      password: string;
+      confirmPassword: string;
+    }
+  >({
     name: "",
     role: "SuperAdmin",
     status: "Active",
+    email: "",
+    password: "",
+    confirmPassword: "",
   });
 
   const totalStaff = staff.length;
@@ -227,6 +236,27 @@ export default function Teams() {
                             />
                           </div>
                           <div className="space-y-1.5">
+                            <Label
+                              htmlFor="staff-email"
+                              className="text-xs font-medium text-slate-700"
+                            >
+                              Login email
+                            </Label>
+                            <Input
+                              id="staff-email"
+                              type="email"
+                              placeholder="name@company.com"
+                              className="h-9 text-xs"
+                              value={newStaff.email}
+                              onChange={(e) =>
+                                setNewStaff((current) => ({
+                                  ...current,
+                                  email: e.target.value,
+                                }))
+                              }
+                            />
+                          </div>
+                          <div className="space-y-1.5">
                             <Label className="text-xs font-medium text-slate-700">
                               Role
                             </Label>
@@ -274,6 +304,48 @@ export default function Teams() {
                               </SelectContent>
                             </Select>
                           </div>
+                          <div className="space-y-1.5">
+                            <Label
+                              htmlFor="staff-password"
+                              className="text-xs font-medium text-slate-700"
+                            >
+                              Password
+                            </Label>
+                            <Input
+                              id="staff-password"
+                              type="password"
+                              placeholder="Set a temporary password"
+                              className="h-9 text-xs"
+                              value={newStaff.password}
+                              onChange={(e) =>
+                                setNewStaff((current) => ({
+                                  ...current,
+                                  password: e.target.value,
+                                }))
+                              }
+                            />
+                          </div>
+                          <div className="space-y-1.5">
+                            <Label
+                              htmlFor="staff-password-confirm"
+                              className="text-xs font-medium text-slate-700"
+                            >
+                              Confirm password
+                            </Label>
+                            <Input
+                              id="staff-password-confirm"
+                              type="password"
+                              placeholder="Re-enter password"
+                              className="h-9 text-xs"
+                              value={newStaff.confirmPassword}
+                              onChange={(e) =>
+                                setNewStaff((current) => ({
+                                  ...current,
+                                  confirmPassword: e.target.value,
+                                }))
+                              }
+                            />
+                          </div>
                         </div>
                       </div>
                       <DialogFooter>
@@ -297,6 +369,15 @@ export default function Teams() {
                           className="h-8 px-3 text-xs"
                           onClick={() => {
                             if (!newStaff.name.trim()) {
+                              return;
+                            }
+                            if (!newStaff.email.trim()) {
+                              return;
+                            }
+                            if (
+                              !newStaff.password.trim() ||
+                              newStaff.password !== newStaff.confirmPassword
+                            ) {
                               return;
                             }
                             const nextIdNumber =
@@ -332,6 +413,9 @@ export default function Teams() {
                               name: "",
                               role: "SuperAdmin",
                               status: "Active",
+                              email: "",
+                              password: "",
+                              confirmPassword: "",
                             });
                           }}
                         >

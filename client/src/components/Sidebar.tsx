@@ -21,9 +21,9 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 const NAV_ITEMS = [
   { label: "Dashboard", icon: LayoutDashboard, href: "/dashboard" },
   { label: "Entities", icon: Building2, href: "/entities" },
+  { label: "Teams/Staff", icon: UserCog, href: "/teams" },
   { label: "Invoices", icon: ReceiptText, href: "/invoices" },
   { label: "Territories", icon: Map, href: "/territories" },
-  { label: "Teams/Staff", icon: UserCog, href: "/teams" },
   { label: "Services", icon: Briefcase, href: "/services" },
   // { label: "Settings", icon: Settings, href: "/settings" },
 ];
