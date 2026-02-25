@@ -580,6 +580,13 @@ export default function Dashboard() {
     (row) => row.planName === "Agency"
   ).length;
 
+  // Static, high-level mock counts for summary cards
+  const mockUserCount = 12840;
+  const mockBusinessCount = 3420;
+  const mockCommunityCount = 1980;
+  const mockEventOrganizerCount = 960;
+  const mockAgencyCount = 1740;
+
   const activeBusinessEntities = ENTITIES.filter(
     (entity) => entity.type === "Business" && entity.status === "approved"
   ).sort(
@@ -704,32 +711,32 @@ export default function Dashboard() {
               <>
                 <StatCard 
                   title="Users" 
-                  value={todayStats.totalUsers.toLocaleString()}
+                  value={mockUserCount.toLocaleString()}
                   subValue={`${todayStats.activeUsersDaily} active today`}
-                  trend={calculateTrend(todayStats.totalUsers, yesterdayStats?.totalUsers || 0)}
+                  trend={calculateTrend(mockUserCount, yesterdayStats?.totalUsers || 0)}
                   icon={<Users className="w-4 h-4" />}
                 />
                 <StatCard 
                   title="Businesses / Brands" 
-                  value={registeredBusinessBrands.toLocaleString()}
+                  value={mockBusinessCount.toLocaleString()}
                   subValue="Registered business & brand accounts"
                   icon={<Building2 className="w-4 h-4" />}
                 />
                 <StatCard 
                   title="Communities / Organizations" 
-                  value={registeredCommunitiesOrganizations.toLocaleString()}
+                  value={mockCommunityCount.toLocaleString()}
                   subValue="Registered community & organization accounts"
                   icon={<Users className="w-4 h-4" />}
                 />
                 <StatCard 
                   title="Event Organizers" 
-                  value={registeredEventOrganizers.toLocaleString()}
+                  value={mockEventOrganizerCount.toLocaleString()}
                   subValue="Registered event organizer accounts"
                   icon={<CalendarDays className="w-4 h-4" />}
                 />
                 <StatCard 
                   title="Agencies" 
-                  value={registeredAgencies.toLocaleString()}
+                  value={mockAgencyCount.toLocaleString()}
                   subValue="Registered agency accounts"
                   icon={<Building2 className="w-4 h-4" />}
                 />
