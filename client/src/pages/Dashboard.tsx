@@ -906,7 +906,7 @@ export default function Dashboard() {
                           colSpan={5}
                           className="py-8 text-center text-sm text-muted-foreground"
                         >
-                          No communities or organizations match the current filters.
+                          No communities or organizations match the current filters..
                         </TableCell>
                       </TableRow>
                     )}
